@@ -1,0 +1,1523 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FokusBelajar - Media Digital BK Manajemen Diri</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        /* === TEMA CERAH MODERN: OCEAN SKY, MINT & CORAL === */
+        :root {
+            --primary: #0ea5e9;
+            --primary-dark: #0284c7;
+            --primary-light: #e0f2fe;
+            --teal: #14b8a6;
+            --teal-light: #ccfbf1;
+            --coral: #ff7b54;
+            --coral-light: #ffede6;
+            --amber: #f59e0b;
+            --amber-light: #fef3c7;
+            --bg-page: #edf6fc;
+            --surface: #ffffff;
+            --text-dark: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2eef7;
+            --danger: #ef4444;
+            --success: #10b981;
+            --shadow-soft: 0 12px 32px rgba(14, 165, 233, 0.08);
+            --shadow-card: 0 8px 24px rgba(15, 23, 42, 0.05);
+            --transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; }
+        h1, h2, h3, h4, .brand-title { font-family: 'Fredoka', 'Plus Jakarta Sans', sans-serif; }
+
+        body {
+            background: var(--bg-page);
+            background-image:
+                radial-gradient(circle at 10% 15%, rgba(14, 165, 233, 0.14) 0%, transparent 32%),
+                radial-gradient(circle at 90% 85%, rgba(20, 184, 166, 0.14) 0%, transparent 34%),
+                radial-gradient(circle at 85% 15%, rgba(255, 123, 84, 0.12) 0%, transparent 26%);
+            color: var(--text-dark);
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* === ANIMASI MASKOT MOCHI === */
+        @keyframes floatSoft { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+        @keyframes wigglePanda { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(-6deg) scale(1.06); } 60% { transform: rotate(6deg) scale(1.06); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .mochi-float { animation: floatSoft 3.2s ease-in-out infinite; }
+        .mochi-wiggle { animation: wigglePanda 0.5s ease !important; }
+
+        /* === HALAMAN LOGIN SPLIT-SCREEN (BERBEDA DARI PROJEK SEBELUMNYA) === */
+        #auth-wrapper {
+            display: flex; align-items: center; justify-content: center;
+            position: fixed; inset: 0; z-index: 1000; padding: 20px;
+            background: linear-gradient(135deg, #dff3ff 0%, #e6fffa 55%, #fff3eb 100%);
+            overflow-y: auto; transition: opacity 0.35s ease;
+        }
+        .auth-split-box {
+            display: grid; grid-template-columns: 1fr 1.15fr;
+            width: 100%; max-width: 840px; min-height: 520px;
+            background: #ffffff; border-radius: 32px; overflow: hidden;
+            box-shadow: 0 24px 60px rgba(14, 165, 233, 0.18);
+            border: 4px solid rgba(255,255,255,0.85);
+            margin: auto;
+        }
+        .auth-left-panel {
+            background: linear-gradient(155deg, #0ea5e9 0%, #14b8a6 65%, #0d9488 100%);
+            padding: 36px 28px; color: #fff;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            text-align: center; position: relative; overflow: hidden;
+        }
+        .auth-left-panel::before {
+            content: ''; position: absolute; width: 200px; height: 200px; border-radius: 50%;
+            background: rgba(255,255,255,0.1); top: -50px; left: -50px;
+        }
+        .auth-left-panel::after {
+            content: ''; position: absolute; width: 160px; height: 160px; border-radius: 50%;
+            background: rgba(255,209,102,0.18); bottom: -40px; right: -30px;
+        }
+        .auth-badge-left {
+            background: rgba(255,255,255,0.2); backdrop-filter: blur(6px);
+            padding: 6px 14px; border-radius: 20px; font-size: 11.5px; font-weight: 800;
+            margin-bottom: 16px; z-index: 2;
+        }
+        .auth-right-panel {
+            padding: 32px 34px; display: flex; flex-direction: column; justify-content: center;
+            background: #ffffff;
+        }
+        .role-switcher {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 6px;
+            background: #f1f5f9; padding: 5px; border-radius: 14px; margin-bottom: 20px;
+        }
+        .role-btn {
+            padding: 9px 12px; border: none; border-radius: 10px; background: transparent;
+            color: var(--text-muted); font-weight: 800; font-size: 13px; cursor: pointer;
+            transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 6px;
+        }
+        .role-btn.active { background: #ffffff; color: var(--primary-dark); box-shadow: 0 4px 12px rgba(15,23,42,0.08); }
+        .role-btn.admin-tab.active { background: #1e293b; color: #ffffff; }
+
+        .auth-form-panel { display: none; animation: fadeIn 0.3s ease; }
+        .auth-form-panel.active { display: block; }
+
+        .brand-title { font-size: 26px; font-weight: 700; color: var(--text-dark); }
+        .brand-title span { color: var(--primary); }
+        .privacy-mini {
+            background: var(--teal-light); color: #0f766e; font-size: 11.5px; font-weight: 700;
+            padding: 8px 12px; border-radius: 12px; margin: 10px 0 14px; text-align: left;
+        }
+        .auth-alert { display: none; padding: 10px 14px; border-radius: 12px; font-size: 12.5px; font-weight: 700; margin-bottom: 14px; text-align: left; }
+        .auth-alert.error { display: block; background: #fef2f2; color: #b91c1c; border: 1.5px solid #fecaca; }
+        .auth-alert.success { display: block; background: #ecfdf5; color: #047857; border: 1.5px solid #a7f3d0; }
+
+        .input-group { margin-bottom: 12px; text-align: left; }
+        .input-group label { display: block; font-size: 12.5px; font-weight: 700; margin-bottom: 4px; color: var(--text-dark); }
+        .input-group input, .input-group select, .input-group textarea {
+            width: 100%; padding: 10px 14px; border: 2px solid var(--border); border-radius: 14px;
+            background: #f8fbff; font-size: 13.5px; font-weight: 600; outline: none; transition: 0.2s;
+        }
+        .input-group input:focus, .input-group select:focus, .input-group textarea:focus {
+            border-color: var(--primary); background: #fff; box-shadow: 0 0 0 4px rgba(14,165,233,0.12);
+        }
+
+        .btn-primary {
+            width: 100%; padding: 12px 18px; border: none; border-radius: 14px; cursor: pointer;
+            background: linear-gradient(135deg, var(--primary), var(--teal)); color: #fff;
+            font-weight: 800; font-size: 14px; border-bottom: 4px solid var(--primary-dark);
+            transition: 0.2s; margin-top: 6px;
+        }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(14,165,233,0.25); }
+        .btn-coral { background: linear-gradient(135deg, #ff8c66, var(--coral)); border-bottom-color: #d9532f; }
+        .btn-dark { background: linear-gradient(135deg, #334155, #1e293b); border-bottom-color: #0f172a; }
+        .btn-soft {
+            padding: 9px 16px; border: 2px solid var(--border); background: #fff; color: var(--text-dark);
+            border-radius: 12px; font-weight: 700; font-size: 13px; cursor: pointer; transition: 0.2s;
+        }
+        .btn-soft:hover { border-color: var(--primary); color: var(--primary); background: var(--primary-light); }
+        .auth-switch { margin-top: 14px; font-size: 13px; color: var(--text-muted); font-weight: 600; text-align: center; }
+        .auth-switch a { color: var(--primary-dark); font-weight: 800; cursor: pointer; text-decoration: none; }
+
+        /* === LAYOUT DASHBOARD UTAMA === */
+        #main-app, #admin-app { display: none; height: 100vh; width: 100%; opacity: 0; transition: opacity 0.35s ease; }
+
+        .sidebar {
+            width: 245px; background: var(--surface); border-right: 2px solid var(--border);
+            display: flex; flex-direction: column; padding: 22px 14px; flex-shrink: 0;
+        }
+        .side-brand { display: flex; align-items: center; gap: 10px; padding: 0 10px 22px; }
+        .side-logo {
+            width: 40px; height: 40px; border-radius: 14px; background: linear-gradient(135deg, var(--primary), var(--teal));
+            display: flex; align-items: center; justify-content: center; font-size: 20px; color: #fff;
+        }
+        .nav-menu { display: flex; flex-direction: column; gap: 5px; flex: 1; overflow-y: auto; }
+        .nav-link {
+            display: flex; align-items: center; gap: 11px; padding: 11px 14px; border-radius: 14px;
+            color: var(--text-muted); font-weight: 700; font-size: 13.5px; cursor: pointer;
+            transition: 0.2s; text-decoration: none;
+        }
+        .nav-link:hover { background: var(--primary-light); color: var(--primary-dark); }
+        .nav-link.active { background: linear-gradient(135deg, var(--primary), var(--teal)); color: #fff; box-shadow: 0 6px 16px rgba(14,165,233,0.24); }
+        .side-note {
+            margin: 12px 4px; padding: 12px; border-radius: 16px; background: var(--coral-light);
+            border: 1.5px dashed var(--coral); font-size: 11.5px; font-weight: 700; color: #9a3412; line-height: 1.4;
+        }
+
+        .mobile-topbar { display: none; background: #fff; padding: 12px 18px; border-bottom: 2px solid var(--border); justify-content: space-between; align-items: center; }
+
+        .main-wrapper { flex: 1; overflow-y: auto; padding: 24px 30px; }
+        .top-header {
+            display: flex; justify-content: space-between; align-items: center; gap: 14px;
+            margin-bottom: 22px; flex-wrap: wrap;
+        }
+        .user-chip {
+            display: flex; align-items: center; gap: 10px; background: #fff; padding: 7px 14px 7px 8px;
+            border-radius: 30px; border: 2px solid var(--border); box-shadow: var(--shadow-card);
+        }
+        .user-avatar {
+            width: 34px; height: 34px; border-radius: 50%; background: var(--primary-light);
+            display: flex; align-items: center; justify-content: center; font-size: 18px;
+        }
+
+        .page-section, .admin-section { display: none; max-width: 1140px; margin: 0 auto; padding-bottom: 40px; animation: fadeIn 0.3s ease; }
+        .page-section.active, .admin-section.active { display: block; }
+
+        /* === GRID & KOMPONEN === */
+        .home-layout { display: grid; grid-template-columns: 1.85fr 1fr; gap: 22px; align-items: start; }
+
+        .hero-banner {
+            background: linear-gradient(135deg, #0284c7 0%, #0ea5e9 52%, #14b8a6 100%);
+            border-radius: 26px; padding: 26px 30px; color: #fff; display: flex;
+            align-items: center; justify-content: space-between; gap: 18px;
+            box-shadow: 0 16px 36px rgba(14,165,233,0.24); position: relative; overflow: hidden; margin-bottom: 22px;
+        }
+        .hero-banner.admin-hero { background: linear-gradient(135deg, #1e293b 0%, #0f172a 60%, #0284c7 100%); }
+        .hero-pill {
+            display: inline-block; background: rgba(255,255,255,0.22); padding: 5px 12px;
+            border-radius: 20px; font-size: 11.5px; font-weight: 800; margin-bottom: 10px;
+        }
+        .hero-mascot-box { display: flex; align-items: center; gap: 10px; cursor: pointer; flex-shrink: 0; }
+        .mochi-bubble {
+            background: #fff; color: var(--text-dark); padding: 10px 14px; border-radius: 16px;
+            border-bottom-right-radius: 4px; font-size: 12px; font-weight: 800; max-width: 175px;
+            box-shadow: 0 8px 20px rgba(15,23,42,0.16); line-height: 1.35;
+        }
+
+        .cat-pills { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; }
+        .cat-pill {
+            background: #fff; border: 2px solid var(--border); padding: 9px 15px; border-radius: 14px;
+            font-size: 13px; font-weight: 700; color: var(--text-dark); cursor: pointer; transition: 0.2s;
+            display: flex; align-items: center; gap: 7px;
+        }
+        .cat-pill:hover { border-color: var(--primary); background: var(--primary-light); color: var(--primary-dark); transform: translateY(-2px); }
+
+        .card {
+            background: var(--surface); border-radius: 22px; padding: 22px;
+            border: 2px solid var(--border); box-shadow: var(--shadow-card); margin-bottom: 18px;
+        }
+        .card-grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
+        .card-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+
+        .mini-feature-card {
+            background: #fff; border: 2px solid var(--border); border-radius: 20px; padding: 18px;
+            cursor: pointer; transition: var(--transition);
+        }
+        .mini-feature-card:hover { transform: translateY(-4px); border-color: var(--primary); box-shadow: var(--shadow-soft); }
+        .icon-circle {
+            width: 46px; height: 46px; border-radius: 14px; display: flex; align-items: center;
+            justify-content: center; font-size: 22px; margin-bottom: 10px;
+        }
+
+        .limit-badge {
+            display: inline-block; font-size: 11.5px; font-weight: 800; padding: 5px 11px;
+            border-radius: 10px; background: var(--amber-light); color: #92400e; margin-bottom: 14px;
+        }
+
+        /* Kotak Solusi Otomatis Kebiasaan Digital */
+        .solution-box {
+            display: none; background: linear-gradient(135deg, #f0fdfa, #e0f2fe);
+            border: 2px solid #99f6e4; border-left: 6px solid var(--teal);
+            border-radius: 16px; padding: 15px 18px; margin: 12px 0 16px;
+            animation: fadeIn 0.3s ease;
+        }
+        .solution-box.show { display: block; }
+
+        /* Wizard Rencana Tugas */
+        .wiz-step { display: none; animation: fadeIn 0.3s ease; }
+        .wiz-step.active { display: block; }
+        .wiz-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(135px, 1fr)); gap: 12px; margin-top: 14px; }
+        .wiz-card {
+            border: 2px solid var(--border); border-bottom: 4px solid #cbd5e1; border-radius: 18px;
+            padding: 16px 12px; text-align: center; cursor: pointer; background: #fff; transition: var(--transition);
+        }
+        .wiz-card:hover { border-color: var(--primary); border-bottom-color: var(--primary-dark); background: var(--primary-light); transform: translateY(-3px); }
+        .wiz-card span { font-size: 30px; display: block; margin-bottom: 6px; }
+        .wiz-card h4 { font-size: 13.5px; }
+
+        .list-item {
+            background: #f8fbff; border: 2px solid var(--border); border-left: 6px solid var(--primary);
+            border-radius: 16px; padding: 15px 18px; margin-bottom: 12px;
+            display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap;
+            transition: 0.2s;
+        }
+        .list-item.clickable { cursor: pointer; }
+        .list-item.clickable:hover { transform: translateY(-2px); background: #eff8ff; border-color: var(--primary); }
+        .list-item.done { border-left-color: var(--success); background: #f0fdf4; }
+        .list-item.kicked { border-left-color: var(--danger); background: #fef2f2; }
+        .tag { font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 20px; }
+        .tag-sky { background: var(--primary-light); color: var(--primary-dark); }
+        .tag-green { background: #dcfce7; color: #15803d; }
+        .tag-red { background: #fee2e2; color: #b91c1c; }
+
+        /* Timer & Custom Range Sesi Fokus */
+        .focus-circle {
+            width: 210px; height: 210px; border-radius: 50%; margin: 18px auto;
+            border: 12px solid var(--primary-light); background: #fff;
+            display: flex; align-items: center; justify-content: center;
+            font-family: 'Fredoka', sans-serif; font-size: 46px; font-weight: 700; color: var(--primary-dark);
+            box-shadow: 0 14px 32px rgba(14,165,233,0.16);
+        }
+        .custom-range-wrap {
+            max-width: 420px; margin: 16px auto 4px; background: #f8fbff;
+            border: 2px solid var(--border); border-radius: 18px; padding: 14px 18px;
+        }
+        .custom-range-wrap input[type="range"] {
+            width: 100%; accent-color: var(--primary); cursor: pointer; margin: 8px 0;
+        }
+
+        .bar-bg { width: 100%; height: 12px; background: var(--border); border-radius: 20px; overflow: hidden; margin: 10px 0 6px; }
+        .bar-fill { height: 100%; background: linear-gradient(90deg, var(--teal), var(--primary)); width: 0%; transition: width 0.4s; }
+
+        .btn-mini { padding: 7px 13px; border-radius: 10px; border: none; font-size: 12px; font-weight: 800; cursor: pointer; }
+        .btn-mini.kick { background: #fee2e2; color: #b91c1c; }
+        .btn-mini.allow { background: #dcfce7; color: #15803d; }
+        .btn-mini.del { background: #e2e8f0; color: #334155; }
+        .btn-mini.focus { background: var(--primary-light); color: var(--primary-dark); }
+
+        .toast {
+            position: fixed; bottom: 26px; right: 26px; background: #fff; padding: 14px 20px;
+            border-radius: 16px; border: 2px solid var(--primary-light); border-left: 6px solid var(--primary);
+            box-shadow: 0 12px 30px rgba(15,23,42,0.14); font-weight: 700; font-size: 13.5px;
+            transform: translateX(160%); transition: 0.35s ease; z-index: 2000;
+        }
+        .toast.show { transform: translateX(0); }
+
+        @media (max-width: 860px) {
+            body { overflow: auto; }
+            .auth-split-box { grid-template-columns: 1fr; border-radius: 24px; }
+            .auth-left-panel { padding: 24px 20px; }
+            .auth-right-panel { padding: 24px 20px; }
+            #main-app, #admin-app { flex-direction: column; height: 100vh; }
+            .mobile-topbar { display: flex; }
+            .sidebar {
+                position: fixed; bottom: 0; left: 0; width: 100%; height: 66px; flex-direction: row;
+                padding: 0 6px; border-right: none; border-top: 2px solid var(--border); z-index: 100;
+            }
+            .sidebar .side-brand, .sidebar .side-note, .sidebar .logout-desktop { display: none; }
+            .nav-menu { flex-direction: row; justify-content: space-around; align-items: center; overflow-x: auto; gap: 2px; }
+            .nav-link { flex-direction: column; gap: 2px; padding: 6px 8px; font-size: 10px; white-space: nowrap; }
+            .main-wrapper { padding: 16px 14px 86px; }
+            .home-layout, .card-grid-2, .card-grid-3 { grid-template-columns: 1fr; }
+            .hero-banner { flex-direction: column; text-align: center; padding: 22px 18px; }
+            .hero-mascot-box { flex-direction: column-reverse; }
+            .toast { bottom: 80px; right: 14px; left: 14px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- === HALAMAN LOGIN SPLIT-SCREEN (BERBEDA & MASKOT FULL-BODY) === -->
+    <div id="auth-wrapper">
+        <div class="auth-split-box">
+            <!-- Panel Kiri: Maskot Full-Body Mochi si Panda -->
+            <div class="auth-left-panel">
+                <div class="auth-badge-left">🌟 MEDIA DIGITAL BK</div>
+                <svg width="165" height="175" viewBox="0 0 180 190" class="mochi-float" style="z-index:2; margin-bottom:10px;" aria-label="Maskot Mochi Panda">
+                    <!-- Telinga -->
+                    <circle cx="52" cy="40" r="18" fill="#1e293b"/>
+                    <circle cx="128" cy="40" r="18" fill="#1e293b"/>
+                    <circle cx="52" cy="40" r="8" fill="#ffb3c6"/>
+                    <circle cx="128" cy="40" r="8" fill="#ffb3c6"/>
+                    <!-- Badan Gemuk Full-Body -->
+                    <ellipse cx="90" cy="134" rx="46" ry="38" fill="#ffffff"/>
+                    <!-- Kaki -->
+                    <ellipse cx="64" cy="166" rx="16" ry="11" fill="#1e293b"/>
+                    <ellipse cx="116" cy="166" rx="16" ry="11" fill="#1e293b"/>
+                    <circle cx="64" cy="166" r="5" fill="#ffb3c6"/>
+                    <circle cx="116" cy="166" r="5" fill="#ffb3c6"/>
+                    <!-- Tangan Memegang Buku -->
+                    <ellipse cx="48" cy="128" rx="14" ry="18" transform="rotate(28 48 128)" fill="#1e293b"/>
+                    <ellipse cx="132" cy="128" rx="14" ry="18" transform="rotate(-28 132 128)" fill="#1e293b"/>
+                    <!-- Buku Belajar Mini -->
+                    <rect x="64" y="122" width="52" height="34" rx="8" fill="#ffd166" stroke="#f59e0b" stroke-width="3"/>
+                    <line x1="90" y1="122" x2="90" y2="156" stroke="#f59e0b" stroke-width="3"/>
+                    <text x="72" y="144" font-size="14">⭐</text>
+                    <!-- Kepala -->
+                    <ellipse cx="90" cy="76" rx="48" ry="42" fill="#ffffff"/>
+                    <!-- Lingkar Mata Panda -->
+                    <ellipse cx="70" cy="76" rx="13" ry="15" transform="rotate(-12 70 76)" fill="#1e293b"/>
+                    <ellipse cx="110" cy="76" rx="13" ry="15" transform="rotate(12 110 76)" fill="#1e293b"/>
+                    <!-- Bola Mata Berbinar -->
+                    <circle cx="71" cy="74" r="5" fill="#ffffff"/>
+                    <circle cx="109" cy="74" r="5" fill="#ffffff"/>
+                    <circle cx="73" cy="72" r="2" fill="#0ea5e9"/>
+                    <circle cx="111" cy="72" r="2" fill="#0ea5e9"/>
+                    <!-- Pipi Merona -->
+                    <ellipse cx="52" cy="88" rx="8" ry="5" fill="#ff8fab" opacity="0.75"/>
+                    <ellipse cx="128" cy="88" rx="8" ry="5" fill="#ff8fab" opacity="0.75"/>
+                    <!-- Hidung & Senyum -->
+                    <ellipse cx="90" cy="84" rx="5" ry="3.5" fill="#1e293b"/>
+                    <path d="M82 91 Q90 98 98 91" fill="none" stroke="#1e293b" stroke-width="2.8" stroke-linecap="round"/>
+                </svg>
+                <h2 style="font-size:28px; margin-bottom:6px; z-index:2;">FokusBelajar</h2>
+                <p style="font-size:13px; opacity:0.95; line-height:1.5; max-width:280px; z-index:2;">
+                    Kenalan sama <strong>Mochi</strong> 🐼! Teman belajarmu untuk menyeimbangkan media sosial dan menaklukkan tugas tanpa menunda.
+                </p>
+            </div>
+
+            <!-- Panel Kanan: Form Login / Daftar / Admin -->
+            <div class="auth-right-panel">
+                <div class="role-switcher">
+                    <button type="button" class="role-btn active" id="tabPelajar" onclick="switchRole('pelajar')">🎓 Pelajar</button>
+                    <button type="button" class="role-btn admin-tab" id="tabAdmin" onclick="switchRole('admin')">🛡️ Admin</button>
+                </div>
+
+                <!-- 1. DAFTAR PELAJAR -->
+                <div class="auth-form-panel" id="cardRegister">
+                    <h3 style="font-size:22px; margin-bottom:4px;">Buat Akun Pelajar</h3>
+                    <p style="font-size:12.5px; color:var(--text-muted);">Cukup pakai nama panggilan atau kode siswa.</p>
+                    <div class="privacy-mini">🔒 Privasi Aman: Tidak meminta nama lengkap/NIS.</div>
+                    <div id="regAlert" class="auth-alert"></div>
+                    <form id="formRegister" onsubmit="doRegister(event)">
+                        <div class="input-group">
+                            <label>Nama Panggilan / Kode Siswa</label>
+                            <input type="text" id="regNama" placeholder="Contoh: Raka atau Siswa01" required>
+                        </div>
+                        <div class="input-group">
+                            <label>Email</label>
+                            <input type="email" id="regEmail" placeholder="nama@email.com" required>
+                        </div>
+                        <div class="input-group">
+                            <label>Kata Sandi</label>
+                            <input type="password" id="regPass" placeholder="Minimal 4 karakter" minlength="4" required>
+                        </div>
+                        <button type="submit" class="btn-primary">✨ Daftar Sekarang</button>
+                    </form>
+                    <div class="auth-switch">Sudah punya akun? <a onclick="showAuthCard('login')">Masuk di sini</a></div>
+                </div>
+
+                <!-- 2. LOGIN PELAJAR -->
+                <div class="auth-form-panel" id="cardLogin">
+                    <h3 style="font-size:22px; margin-bottom:4px;">Masuk Pelajar</h3>
+                    <p style="font-size:12.5px; color:var(--text-muted); margin-bottom:16px;">Lanjutkan rencana belajarmu bareng Mochi.</p>
+                    <div id="loginAlert" class="auth-alert"></div>
+                    <form id="formLogin" onsubmit="doLogin(event)">
+                        <div class="input-group">
+                            <label>Email</label>
+                            <input type="email" id="loginEmail" placeholder="nama@email.com" required>
+                        </div>
+                        <div class="input-group">
+                            <label>Kata Sandi</label>
+                            <input type="password" id="loginPass" placeholder="••••••••" required>
+                        </div>
+                        <button type="submit" class="btn-primary">🚀 Masuk ke FokusBelajar</button>
+                    </form>
+                    <div class="auth-switch">Belum punya akun? <a onclick="showAuthCard('register')">Daftar terlebih dahulu</a></div>
+                </div>
+
+                <!-- 3. LOGIN ADMIN (SALSABILA) -->
+                <div class="auth-form-panel" id="cardAdminLogin">
+                    <h3 style="font-size:22px; margin-bottom:4px;">Panel Admin & Guru BK</h3>
+                    <p style="font-size:12.5px; color:var(--text-muted); margin-bottom:16px;">Monitoring refleksi mingguan & kontrol kuota 100 pengguna.</p>
+                    <div id="adminAlert" class="auth-alert"></div>
+                    <form id="formAdminLogin" onsubmit="doAdminLogin(event)">
+                        <div class="input-group">
+                            <label>Nama Admin</label>
+                            <input type="text" id="adminUser" placeholder="Masukkan nama admin" required>
+                        </div>
+                        <div class="input-group">
+                            <label>Kata Sandi Admin</label>
+                            <input type="password" id="adminPass" placeholder="••••••••" required>
+                        </div>
+                        <button type="submit" class="btn-primary btn-dark">🔐 Masuk sebagai Admin</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- === APLIKASI UTAMA PELAJAR === -->
+    <div id="main-app">
+        <div class="mobile-topbar">
+            <div class="brand-title" style="font-size:20px;">🐼 Fokus<span>Belajar</span></div>
+            <button onclick="doLogout()" class="btn-mini kick">🚪 Keluar</button>
+        </div>
+
+        <nav class="sidebar">
+            <div class="side-brand">
+                <div class="side-logo">🐼</div>
+                <div class="brand-title" style="font-size:21px;">Fokus<span>Belajar</span></div>
+            </div>
+            <div class="nav-menu">
+                <a class="nav-link active" onclick="switchPage('beranda', this)"><span>🏠</span> Beranda</a>
+                <a class="nav-link" onclick="switchPage('digital', this)"><span>📱</span> Kebiasaan Digital</a>
+                <a class="nav-link" onclick="switchPage('rencana', this)"><span>📝</span> Rencana Tugas</a>
+                <a class="nav-link" onclick="switchPage('fokus', this)"><span>⏱️</span> Sesi Fokus</a>
+                <a class="nav-link" onclick="switchPage('hasil', this)"><span>✅</span> Catatan Hasil</a>
+                <a class="nav-link" onclick="switchPage('mingguan', this)"><span>📊</span> Refleksi Mingguan</a>
+                <a class="nav-link" onclick="switchPage('materi', this)"><span>💡</span> Materi Edukasi</a>
+                <a class="nav-link" onclick="switchPage('bantuan', this)"><span>💬</span> Bantuan BK</a>
+            </div>
+            <div class="side-note">🐼 "Pelan-pelan aja, yang penting mulai dulu!" — Mochi</div>
+            <div class="logout-desktop" style="padding: 4px;">
+                <a class="nav-link" style="color:var(--danger);" onclick="doLogout()"><span>🚪</span> Keluar</a>
+            </div>
+        </nav>
+
+        <div class="main-wrapper">
+            <div class="top-header">
+                <div>
+                    <h2 id="pageHeaderTitle" style="font-size:22px;">Beranda & Orientasi</h2>
+                    <p style="font-size:12.5px; color:var(--text-muted); font-weight:600;">Media Digital BK — Manajemen Diri Belajar & Keseimbangan Media Sosial</p>
+                </div>
+                <div class="user-chip">
+                    <div class="user-avatar">🐼</div>
+                    <div>
+                        <div style="font-size:13px; font-weight:800;" id="topUserName">Siswa</div>
+                        <div style="font-size:11px; color:var(--teal); font-weight:700;">Teman Mochi</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 1. BERANDA / ORIENTASI -->
+            <section id="beranda" class="page-section active">
+                <div class="home-layout">
+                    <div>
+                        <div class="hero-banner">
+                            <div>
+                                <div class="hero-pill">🌟 PROTOTIPE MEDIA DIGITAL BK</div>
+                                <h1 style="font-size:28px; margin-bottom:8px;">Hai, <span id="heroUserName">Teman</span>!</h1>
+                                <p style="font-size:13.5px; opacity:0.95; line-height:1.5; max-width:420px;">FokusBelajar membantumu mengelola waktu belajar dan penggunaan media sosial agar lebih seimbang tanpa menunda tugas.</p>
+                                <button onclick="switchPage('rencana', document.querySelectorAll('#main-app .nav-link')[2])" class="btn-primary btn-coral" style="width:auto; padding:10px 20px; margin-top:14px;">📝 Susun Rencana Tugas</button>
+                            </div>
+                            <div class="hero-mascot-box" onclick="sapaMochi()" title="Klik Mochi!">
+                                <div class="mochi-bubble" id="mochiQuote">Klik aku untuk semangat belajar! ✨</div>
+                                <svg id="mochiHero" width="110" height="118" viewBox="0 0 180 190" class="mochi-float">
+                                    <circle cx="52" cy="40" r="18" fill="#1e293b"/>
+                                    <circle cx="128" cy="40" r="18" fill="#1e293b"/>
+                                    <circle cx="52" cy="40" r="8" fill="#ffb3c6"/>
+                                    <circle cx="128" cy="40" r="8" fill="#ffb3c6"/>
+                                    <ellipse cx="90" cy="134" rx="46" ry="38" fill="#ffffff"/>
+                                    <ellipse cx="64" cy="166" rx="16" ry="11" fill="#1e293b"/>
+                                    <ellipse cx="116" cy="166" rx="16" ry="11" fill="#1e293b"/>
+                                    <ellipse cx="48" cy="128" rx="14" ry="18" transform="rotate(28 48 128)" fill="#1e293b"/>
+                                    <ellipse cx="132" cy="128" rx="14" ry="18" transform="rotate(-28 132 128)" fill="#1e293b"/>
+                                    <rect x="64" y="122" width="52" height="34" rx="8" fill="#ffd166" stroke="#f59e0b" stroke-width="3"/>
+                                    <ellipse cx="90" cy="76" rx="48" ry="42" fill="#ffffff"/>
+                                    <ellipse cx="70" cy="76" rx="13" ry="15" transform="rotate(-12 70 76)" fill="#1e293b"/>
+                                    <ellipse cx="110" cy="76" rx="13" ry="15" transform="rotate(12 110 76)" fill="#1e293b"/>
+                                    <circle cx="71" cy="74" r="5" fill="#ffffff"/>
+                                    <circle cx="109" cy="74" r="5" fill="#ffffff"/>
+                                    <ellipse cx="52" cy="88" rx="8" ry="5" fill="#ff8fab" opacity="0.75"/>
+                                    <ellipse cx="128" cy="88" rx="8" ry="5" fill="#ff8fab" opacity="0.75"/>
+                                    <ellipse cx="90" cy="84" rx="5" ry="3.5" fill="#1e293b"/>
+                                    <path d="M82 91 Q90 98 98 91" fill="none" stroke="#1e293b" stroke-width="2.8" stroke-linecap="round"/>
+                                </svg>
+                            </div>
+                        </div>
+
+                        <div class="cat-pills">
+                            <div class="cat-pill" onclick="switchPage('digital', document.querySelectorAll('#main-app .nav-link')[1])">📱 Kebiasaan Digital</div>
+                            <div class="cat-pill" onclick="switchPage('rencana', document.querySelectorAll('#main-app .nav-link')[2])">📝 Rencana Tugas</div>
+                            <div class="cat-pill" onclick="switchPage('materi', document.querySelectorAll('#main-app .nav-link')[6])">💡 8 Materi Edukasi</div>
+                            <div class="cat-pill" onclick="switchPage('bantuan', document.querySelectorAll('#main-app .nav-link')[7])">💬 Bantuan BK</div>
+                        </div>
+
+                        <div class="card">
+                            <h3 style="margin-bottom:10px;">🧭 Petunjuk Alur Penggunaan</h3>
+                            <div class="card-grid-2">
+                                <div class="mini-feature-card" onclick="switchPage('digital', document.querySelectorAll('#main-app .nav-link')[1])">
+                                    <div class="icon-circle" style="background:var(--primary-light);">📱</div>
+                                    <h4>1. Kenali Kebiasaan</h4>
+                                    <p style="font-size:12.5px; color:var(--text-muted); margin-top:4px;">Pilih keluhan distraksi medsos dan dapatkan solusi praktisnya langsung.</p>
+                                </div>
+                                <div class="mini-feature-card" onclick="switchPage('rencana', document.querySelectorAll('#main-app .nav-link')[2])">
+                                    <div class="icon-circle" style="background:var(--coral-light);">📝</div>
+                                    <h4>2. Rencana per Kelompok</h4>
+                                    <p style="font-size:12.5px; color:var(--text-muted); margin-top:4px;">Pilih IPA/IPS/Umum, atur durasi, lalu klik tugas untuk mulai fokus.</p>
+                                </div>
+                                <div class="mini-feature-card" onclick="switchPage('fokus', document.querySelectorAll('#main-app .nav-link')[3])">
+                                    <div class="icon-circle" style="background:var(--teal-light);">⏱️</div>
+                                    <h4>3. Sesi Fokus Custom</h4>
+                                    <p style="font-size:12.5px; color:var(--text-muted); margin-top:4px;">Atur sendiri durasi menit belajarmu tanpa mengunci aplikasi lain.</p>
+                                </div>
+                                <div class="mini-feature-card" onclick="switchPage('mingguan', document.querySelectorAll('#main-app .nav-link')[5])">
+                                    <div class="icon-circle" style="background:var(--amber-light);">📊</div>
+                                    <h4>4. Refleksi Mingguan</h4>
+                                    <p style="font-size:12.5px; color:var(--text-muted); margin-top:4px;">Catat progresmu untuk dipantau bersama Guru BK tanpa peringkat.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="card">
+                            <h3 style="margin-bottom:12px;">📈 Ringkasan Pribadi</h3>
+                            <div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1.5px dashed var(--border);">
+                                <span style="font-size:13px; color:var(--text-muted); font-weight:700;">⏳ Total Fokus</span>
+                                <strong style="color:var(--primary-dark);" id="homeMenit">0 Menit</strong>
+                            </div>
+                            <div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1.5px dashed var(--border);">
+                                <span style="font-size:13px; color:var(--text-muted); font-weight:700;">✅ Tugas Selesai</span>
+                                <strong style="color:var(--success);" id="homeTugasDone">0 Tugas</strong>
+                            </div>
+                            <div style="display:flex; justify-content:space-between; padding:10px 0;">
+                                <span style="font-size:13px; color:var(--text-muted); font-weight:700;">📝 Rencana Aktif</span>
+                                <strong style="color:var(--coral);" id="homeTugasAktif">0 Tugas</strong>
+                            </div>
+                        </div>
+
+                        <div class="card" style="background: linear-gradient(145deg, #f0fdfa, #ffffff); border-color: #99f6e4;">
+                            <h3 style="color:#0f766e; margin-bottom:8px;">🔒 Pemberitahuan Privasi</h3>
+                            <ul style="font-size:12.5px; color:#115e59; line-height:1.6; padding-left:18px; font-weight:600;">
+                                <li>Tidak meminta nama lengkap atau NIS.</li>
+                                <li>Tidak memantau atau mengunci aplikasi medsos di HP-mu.</li>
+                                <li>Tidak ada papan peringkat antar siswa.</li>
+                                <li>Refleksi mingguan dapat dipantau Guru BK untuk layanan bimbingan.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 2. REFLEKSI KEBIASAAN DIGITAL (DIPERBANYAK + SOLUSI OTOMATIS) -->
+            <section id="digital" class="page-section">
+                <div class="card">
+                    <span class="limit-badge">ℹ️ Batas Penggunaan: Bukan diagnosis psikologis; jawaban boleh dilewati.</span>
+                    <h2 style="margin-bottom:6px;">📱 Refleksi Kebiasaan Digital & Solusi</h2>
+                    <p style="font-size:13.5px; color:var(--text-muted); margin-bottom:18px;">Pilih keluhan yang paling sering kamu alami saat belajar, lalu lihat rekomendasi solusinya.</p>
+
+                    <div class="input-group">
+                        <label>1. Keluhan / Masalah Kebiasaan Digital yang Paling Sering Kamu Alami</label>
+                        <select id="digKeluhan" onchange="tampilkanSolusiDigital()">
+                            <option value="">-- Pilih keluhan untuk melihat solusi --</option>
+                            <option value="scroll">Keterusan scroll TikTok / Instagram Reels sampai lupa waktu</option>
+                            <option value="notif">Mudah terdistraksi bunyi notifikasi chat / grup teman</option>
+                            <option value="referensi">Niat cari referensi tugas di HP, malah berakhir nonton YouTube/medsos</option>
+                            <option value="fomo">Merasa FOMO (takut ketinggalan tren/obrolan) jika tidak cek HP</option>
+                            <option value="multitask">Sering belajar sambil buka medsos bersamaan (multitasking)</option>
+                            <option value="begadang">Begadang main HP malam hari sehingga besoknya malas nugas</option>
+                        </select>
+                    </div>
+
+                    <!-- Kotak Solusi Otomatis -->
+                    <div id="boxSolusiOtomatis" class="solution-box">
+                        <strong style="color:#0f766e; font-size:13.5px;">💡 Rekomendasi Solusi untuk Keluhan Ini:</strong>
+                        <p id="teksSolusiOtomatis" style="font-size:13px; color:#1e293b; margin-top:6px; line-height:1.55; font-weight:600;"></p>
+                    </div>
+
+                    <div class="input-group">
+                        <label>2. Situasi pemicu lainnya (Opsional)</label>
+                        <input type="text" id="digSituasi" placeholder="Contoh: Saat tugas terasa sulit, bosan di kamar, atau HP ditaruh di meja...">
+                    </div>
+                    <div class="input-group">
+                        <label>3. Langkah kecil yang siap kamu coba hari ini</label>
+                        <input type="text" id="digKomitmen" placeholder="Contoh: Taruh HP di luar jangkauan selama 25 menit pertama">
+                    </div>
+
+                    <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:12px;">
+                        <button class="btn-primary" style="width:auto; padding:11px 24px;" onclick="simpanRefleksiDigital()">💾 Simpan Refleksi & Solusi</button>
+                        <button class="btn-soft" onclick="switchPage('rencana', document.querySelectorAll('#main-app .nav-link')[2])">⏭️ Lewati ke Rencana Tugas</button>
+                    </div>
+                </div>
+                <div class="card">
+                    <h3 style="margin-bottom:12px;">🗂️ Riwayat Refleksi & Solusi Digitalmu</h3>
+                    <div id="listDigital"></div>
+                </div>
+            </section>
+
+            <!-- 3. RENCANA TUGAS (WIZARD PER KELOMPOK IPA / IPS / UMUM + KLIK LANGSUNG KERJAKAN) -->
+            <section id="rencana" class="page-section">
+                <div class="card">
+                    <span class="limit-badge">ℹ️ Susun rencana tugasmu berdasarkan kelompok pelajaran, lalu klik tugas di bawah untuk langsung mengerjakannya.</span>
+
+                    <!-- Step 1: Pilih Kelompok -->
+                    <div class="wiz-step active" id="wiz-1">
+                        <h2 style="margin-bottom:4px;">🎯 Langkah 1: Pilih Klasifikasi Pelajaran</h2>
+                        <p style="font-size:13px; color:var(--text-muted);">Pilih kelompok mata pelajaran tugasmu.</p>
+                        <div class="wiz-grid" style="grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));">
+                            <div class="wiz-card" onclick="pilihKelompok('IPA')"><span>🔬</span><h4>Kelompok IPA</h4></div>
+                            <div class="wiz-card" onclick="pilihKelompok('IPS')"><span>🧭</span><h4>Kelompok IPS</h4></div>
+                            <div class="wiz-card" onclick="pilihKelompok('Umum')"><span>📚</span><h4>Umum / Ketik Sendiri</h4></div>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Pilih Mapel / Ketik Sendiri -->
+                    <div class="wiz-step" id="wiz-2">
+                        <button class="btn-soft" style="margin-bottom:12px;" onclick="goWiz(1)">← Kembali</button>
+                        <h2 style="margin-bottom:4px;">📖 Langkah 2: Pilih Mata Pelajaran</h2>
+                        <div class="wiz-grid" id="wizMapelGrid"></div>
+                        <div id="wizCustomBox" style="display:none; margin-top:16px; padding:16px; background:var(--primary-light); border-radius:16px; border:2px dashed var(--primary);">
+                            <label style="font-size:13px; font-weight:800; display:block; margin-bottom:6px;">Ketik Nama Mata Pelajaran / Tugas Umum:</label>
+                            <input type="text" id="wizCustomInput" placeholder="Contoh: Informatika, Prakarya, Seni Budaya..." style="width:100%; padding:10px 14px; border:2px solid var(--primary); border-radius:12px; margin-bottom:10px; font-weight:600;">
+                            <button class="btn-primary" style="width:auto; padding:9px 20px;" onclick="simpanCustomMapel()">Lanjut Atur Detail →</button>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Detail Rencana Tugas -->
+                    <div class="wiz-step" id="wiz-3">
+                        <button class="btn-soft" style="margin-bottom:12px;" onclick="goWiz(2)">← Kembali</button>
+                        <h2 style="margin-bottom:4px;">📝 Langkah 3: Atur Ketentuan Tugas (<span id="wizSelectedMapel" style="color:var(--primary-dark);"></span>)</h2>
+                        <div class="card-grid-2" style="margin-top:14px;">
+                            <div class="input-group">
+                                <label>Langkah Kecil Pertama</label>
+                                <input type="text" id="tgsLangkah" placeholder="Contoh: Kerjakan 2 soal awal dulu">
+                            </div>
+                            <div class="input-group">
+                                <label>Durasi Fokus yang Diinginkan (Menit)</label>
+                                <input type="number" id="tgsWaktu" min="1" max="180" placeholder="Contoh: 25">
+                            </div>
+                            <div class="input-group">
+                                <label>Tenggat Waktu (Opsional)</label>
+                                <input type="date" id="tgsTenggat">
+                            </div>
+                            <div class="input-group">
+                                <label>Tingkat Prioritas</label>
+                                <select id="tgsPrioritas">
+                                    <option value="Tinggi">🔴 Tinggi (Mendesak)</option>
+                                    <option value="Sedang">🟡 Sedang (Penting)</option>
+                                    <option value="Rendah">🟢 Rendah (Bisa Nanti)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button class="btn-primary" style="width:auto; padding:11px 26px;" onclick="simpanRencanaTugas()">✨ Simpan Rencana Tugas</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3 style="margin-bottom:12px;">📋 Daftar Rencana Tugas (Klik Tugas untuk Langsung Mengerjakan)</h3>
+                    <div id="listTugas"></div>
+                </div>
+            </section>
+
+            <!-- 4. SESI FOKUS (CUSTOM RANGE WAKTU) -->
+            <section id="fokus" class="page-section">
+                <div class="card" style="text-align:center;">
+                    <span class="limit-badge">🔒 Batas Penggunaan: Sesi fokus TIDAK mengunci layar atau memantau aplikasi lain di perangkatmu.</span>
+                    <h2 style="margin-bottom:6px;">⏱️ Sesi Fokus Belajar</h2>
+                    <p id="fokusAktifLabel" style="font-size:13.5px; color:var(--text-muted); font-weight:700;">Atur durasi custom sesuai kenyamananmu atau klik tugas dari menu Rencana Tugas.</p>
+
+                    <div style="max-width:480px; margin:14px auto 0; background:var(--teal-light); color:#0f766e; padding:12px 16px; border-radius:14px; font-size:12.5px; font-weight:700;">
+                        💡 Strategi Sesi Ini: Jauhkan HP dari jangkauan tangan, tarik napas 3 kali, lalu selesaikan langkah kecil pertamamu.
+                    </div>
+
+                    <!-- Custom Range Waktu -->
+                    <div class="custom-range-wrap">
+                        <div style="display:flex; justify-content:space-between; align-items:center; font-size:13px; font-weight:800;">
+                            <span>🎛️ Atur Durasi Custom:</span>
+                            <div style="display:flex; align-items:center; gap:6px;">
+                                <input type="number" id="customFocusNum" min="1" max="120" value="20" oninput="syncFocusFromNumber(this.value)" style="width:68px; padding:5px 8px; border:2px solid var(--primary); border-radius:10px; font-weight:800; text-align:center;">
+                                <span>Menit</span>
+                            </div>
+                        </div>
+                        <input type="range" id="customFocusSlider" min="1" max="120" value="20" oninput="syncFocusFromSlider(this.value)">
+                        <div style="display:flex; justify-content:space-between; font-size:11px; color:var(--text-muted); font-weight:700;">
+                            <span>1 mnt</span><span>60 mnt</span><span>120 mnt</span>
+                        </div>
+                    </div>
+
+                    <div class="focus-circle" id="focusTimerDisplay">20:00</div>
+
+                    <div style="display:flex; justify-content:center; gap:10px; flex-wrap:wrap;">
+                        <button class="btn-primary" style="width:auto; padding:12px 26px;" id="btnFocusToggle" onclick="toggleFocusTimer()">▶️ Mulai Fokus</button>
+                        <button class="btn-soft" onclick="resetFocusTimer()">🔄 Reset</button>
+                        <button class="btn-primary btn-coral" style="width:auto; padding:12px 24px;" onclick="selesaiSesiFokus()">✅ Selesai & Catat Hasil</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 5. CATATAN HASIL -->
+            <section id="hasil" class="page-section">
+                <div class="card">
+                    <span class="limit-badge">ℹ️ Batas Penggunaan: Fokus pada progres pribadimu — tidak ada peringkat antar siswa.</span>
+                    <h2 style="margin-bottom:14px;">✅ Catatan Hasil Belajar</h2>
+                    <div class="card-grid-2">
+                        <div class="input-group">
+                            <label>Status Tugas</label>
+                            <select id="hslStatus">
+                                <option value="Selesai">✅ Selesai Sepenuhnya</option>
+                                <option value="Sebagian Selesai">🟡 Sebagian Selesai (Progres Bagus)</option>
+                                <option value="Belum Selesai">🔄 Belum Selesai (Akan Dilanjut)</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label>Hambatan yang Ditemui</label>
+                            <input type="text" id="hslHambatan" placeholder="Contoh: Masih tergoda cek chat / materi agak sulit">
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label>Langkah Berikutnya</label>
+                        <input type="text" id="hslLangkah" placeholder="Contoh: Lanjutkan 2 soal sisa besok sore jam 16.00">
+                    </div>
+                    <button class="btn-primary" style="width:auto; padding:11px 24px;" onclick="simpanCatatanHasil()">💾 Simpan Catatan Hasil</button>
+                </div>
+
+                <div class="card">
+                    <h3 style="margin-bottom:12px;">📒 Riwayat Catatan Hasil</h3>
+                    <div id="listHasil"></div>
+                </div>
+            </section>
+
+            <!-- 6. REFLEKSI MINGGUAN (LANGSUNG TERPANTAU GURU BK TANPA PERSETUJUAN) -->
+            <section id="mingguan" class="page-section">
+                <div class="card">
+                    <span class="limit-badge">👩‍🏫 Hasil refleksi mingguan dapat dipantau langsung oleh Guru BK untuk mendukung bimbingan belajarmu.</span>
+                    <h2 style="margin-bottom:16px;">📊 Refleksi Mingguan</h2>
+                    <div class="card-grid-3" style="margin-bottom:20px;">
+                        <div style="background:var(--primary-light); padding:18px; border-radius:18px; text-align:center;">
+                            <h3 style="font-size:30px; color:var(--primary-dark);" id="wkMenit">0</h3>
+                            <p style="font-size:12.5px; font-weight:700; color:var(--text-muted);">Menit Fokus</p>
+                        </div>
+                        <div style="background:#dcfce7; padding:18px; border-radius:18px; text-align:center;">
+                            <h3 style="font-size:30px; color:#15803d;" id="wkSelesai">0</h3>
+                            <p style="font-size:12.5px; font-weight:700; color:var(--text-muted);">Rencana Selesai</p>
+                        </div>
+                        <div style="background:var(--coral-light); padding:18px; border-radius:18px; text-align:center;">
+                            <h3 style="font-size:30px; color:#c2410c;" id="wkBelum">0</h3>
+                            <p style="font-size:12.5px; font-weight:700; color:var(--text-muted);">Masih Berjalan</p>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Strategi apa yang paling membantumu minggu ini?</label>
+                        <textarea id="wkStrategi" rows="3" placeholder="Tuliskan hal baik yang berhasil kamu lakukan minggu ini..."></textarea>
+                    </div>
+                    <button class="btn-primary" style="width:auto; padding:11px 24px;" onclick="simpanRefleksiMingguan()">💾 Simpan Refleksi Mingguan</button>
+                </div>
+
+                <div class="card">
+                    <h3 style="margin-bottom:12px;">🗓️ Arsip Refleksi Mingguan</h3>
+                    <div id="listMingguan"></div>
+                </div>
+            </section>
+
+            <!-- 7. MATERI EDUKASI (8 KARTU LENGKAP) -->
+            <section id="materi" class="page-section">
+                <div class="card">
+                    <span class="limit-badge">📚 Ditelaah oleh Guru BK • Bahasa ringkas dan sesuai usia siswa.</span>
+                    <h2 style="margin-bottom:16px;">💡 Materi Edukasi Manajemen Diri & Media Sosial</h2>
+                    <div class="card-grid-2">
+                        <div class="mini-feature-card" style="cursor:default;">
+                            <div class="icon-circle" style="background:var(--coral-light);">🎯</div>
+                            <h4>1. Menentukan Prioritas</h4>
+                            <p style="font-size:13px; color:var(--text-muted); margin-top:6px; line-height:1.55;">Dahulukan tugas yang tenggatnya paling dekat atau bobotnya besar. Jangan kerjakan semua sekaligus agar tidak kewalahan.</p>
+                        </div>
+                        <div class="mini-feature-card" style="cursor:default;">
+                            <div class="icon-circle" style="background:var(--primary-light);">🔕</div>
+                            <h4>2. Mengelola Notifikasi</h4>
+                            <p style="font-size:13px; color:var(--text-muted); margin-top:6px; line-height:1.55;">Satu bunyi notifikasi bisa membuyarkan fokus hingga 15 menit. Aktifkan mode senyap (DND) selama sesi belajar berlangsung.</p>
+                        </div>
+                        <div class="mini-feature-card" style="cursor:default;">
+                            <div class="icon-circle" style="background:var(--teal-light);">🧩</div>
+                            <h4>3. Memecah Tugas Besar</h4>
+                            <p style="font-size:13px; color:var(--text-muted); margin-top:6px; line-height:1.55;">Prokrastinasi sering muncul karena tugas terasa berat. Pecah menjadi langkah kecil seperti "buka buku dan kerjakan 2 nomor dulu".</p>
+                        </div>
+                        <div class="mini-feature-card" style="cursor:default;">
+                            <div class="icon-circle" style="background:var(--amber-light);">🌿</div>
+                            <h4>4. Jeda Digital Sehat</h4>
+                            <p style="font-size:13px; color:var(--text-muted); margin-top:6px; line-height:1.55;">Media sosial tidak dilarang, cukup dijadwalkan. Jadikan waktu membuka medsos sebagai hadiah singkat setelah 1 sesi fokus selesai.</p>
+                        </div>
+                        <div class="mini-feature-card" style="cursor:default;">
+                            <div class="icon-circle" style="background:#fce7f3;">😌</div>
+                            <h4>5. Mengatasi FOMO (Takut Ketinggalan)</h4>
+                            <p style="font-size:13px; color:var(--text-muted); margin-top:6px; line-height:1.55;">Tren dan obrolan grup tidak akan hilang hanya karena kamu fokus belajar 30 menit. Latih diri untuk nyaman menunda cek HP.</p>
+                        </div>
+                        <div class="mini-feature-card" style="cursor:default;">
+                            <div class="icon-circle" style="background:#ede9fe;">🧠</div>
+                            <h4>6. Hindari Multitasking Belajar & HP</h4>
+                            <p style="font-size:13px; color:var(--text-muted); margin-top:6px; line-height:1.55;">Otak tidak bisa fokus penuh pada dua hal sekaligus. Bolak-balik antara buku dan medsos membuat tugas 2 kali lebih lama selesai.</p>
+                        </div>
+                        <div class="mini-feature-card" style="cursor:default;">
+                            <div class="icon-circle" style="background:#dcfce7;">🪑</div>
+                            <h4>7. Tata Lingkungan Bebas Distraksi</h4>
+                            <p style="font-size:13px; color:var(--text-muted); margin-top:6px; line-height:1.55;">Letakkan HP di luar jangkauan tangan (misal di atas lemari atau ruangan lain) agar tangan tidak refleks membukanya.</p>
+                        </div>
+                        <div class="mini-feature-card" style="cursor:default;">
+                            <div class="icon-circle" style="background:#e0e7ff;">🌙</div>
+                            <h4>8. Jam Malam Digital & Pola Tidur</h4>
+                            <p style="font-size:13px; color:var(--text-muted); margin-top:6px; line-height:1.55;">Berhenti bermain HP 30 menit sebelum tidur. Tidur cukup membuat energi dan kontrol diri besok jauh lebih baik untuk mengerjakan tugas.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 8. AKSES BANTUAN BK -->
+            <section id="bantuan" class="page-section">
+                <div class="card" style="text-align:center; padding:36px 26px;">
+                    <div style="font-size:58px; margin-bottom:10px;">👩‍🏫</div>
+                    <span class="limit-badge">ℹ️ Kontak resmi dipasang sesuai persetujuan dan prosedur sekolah.</span>
+                    <h2 style="margin-bottom:8px;">Akses Bantuan Bimbingan & Konseling</h2>
+                    <p style="font-size:14px; color:var(--text-muted); max-width:540px; margin:0 auto 20px; line-height:1.6;">
+                        Jika kamu masih sering merasa kesulitan lepas dari media sosial atau terbebani oleh tumpukan tugas, kamu bisa berkonsultasi dengan Guru BK secara aman dan rahasia.
+                    </p>
+                    <div style="max-width:480px; margin:0 auto 22px; text-align:left; background:#f8fbff; padding:16px 20px; border-radius:16px; border:2px solid var(--border); font-size:13px; line-height:1.65;">
+                        <strong>Prosedur Menghubungi Guru BK:</strong><br>
+                        1. Sampaikan salam dan kelasmu dengan sopan.<br>
+                        2. Ceritakan singkat kendala belajar atau kebiasaan digitalmu.<br>
+                        3. Buat janji temu di Ruang BK pada jam layanan sekolah.
+                    </div>
+                    <!-- GANTI 628XXXXXXXXXX DENGAN NOMOR WA GURU BK -->
+                    <a id="btnWaBK" href="https://wa.me/628XXXXXXXXXX?text=Halo%20Ibu/Bapak%20Guru%20BK,%20saya%20ingin%20berkonsultasi%20mengenai%20penggunaan%20FokusBelajar." target="_blank" class="btn-primary" style="display:inline-flex; align-items:center; gap:8px; width:auto; padding:13px 28px; background:linear-gradient(135deg,#22c55e,#16a34a); border-bottom-color:#15803d; text-decoration:none;">
+                        💬 Hubungi Guru BK via WhatsApp
+                    </a>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <!-- === DASHBOARD ADMIN / GURU BK (SALSABILA) === -->
+    <div id="admin-app">
+        <div class="mobile-topbar">
+            <div class="brand-title" style="font-size:19px;">🛡️ Admin <span>FokusBelajar</span></div>
+            <button onclick="doAdminLogout()" class="btn-mini kick">🚪 Keluar</button>
+        </div>
+
+        <nav class="sidebar">
+            <div class="side-brand">
+                <div class="side-logo" style="background:#1e293b;">🛡️</div>
+                <div class="brand-title" style="font-size:20px;">Admin<span>Panel</span></div>
+            </div>
+            <div class="nav-menu">
+                <a class="nav-link active" onclick="switchAdminPage('adm-monitor', this)"><span>📊</span> Monitoring & Refleksi</a>
+                <a class="nav-link" onclick="switchAdminPage('adm-users', this)"><span>👥</span> Kelola Akses</a>
+            </div>
+            <div class="side-note" style="background:var(--primary-light); border-color:var(--primary); color:var(--primary-dark);">
+                🛡️ Admin: <strong>Salsabila</strong><br>Kuota: Maks. 100 Siswa
+            </div>
+            <div class="logout-desktop" style="padding:4px;">
+                <a class="nav-link" style="color:var(--danger);" onclick="doAdminLogout()"><span>🚪</span> Keluar Admin</a>
+            </div>
+        </nav>
+
+        <div class="main-wrapper">
+            <section id="adm-monitor" class="admin-section active">
+                <div class="hero-banner admin-hero">
+                    <div>
+                        <div class="hero-pill">🛡️ MONITORING BK & KONTROL KUOTA</div>
+                        <h1 style="font-size:28px; margin-bottom:6px;">Halo, Admin Salsabila!</h1>
+                        <p style="font-size:13.5px; opacity:0.9;">Pantau kuota 100 pengguna, lihat siapa saja yang bisa masuk, dan baca hasil refleksi mingguan siswa secara langsung.</p>
+                    </div>
+                    <div style="font-size:56px;" class="mochi-float">🛡️</div>
+                </div>
+
+                <div class="card">
+                    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+                        <h3>👥 Kuota Pengguna FokusBelajar</h3>
+                        <strong style="color:var(--primary-dark);" id="admQuotaText">0 / 100 Aktif</strong>
+                    </div>
+                    <div class="bar-bg"><div class="bar-fill" id="admQuotaBar"></div></div>
+                    <p style="font-size:12.5px; color:var(--text-muted); font-weight:600;" id="admQuotaSub">Sisa kuota tersedia: 100 orang.</p>
+                    <div class="card-grid-3" style="margin-top:16px;">
+                        <div style="background:var(--primary-light); padding:16px; border-radius:16px; text-align:center;">
+                            <h3 style="font-size:28px; color:var(--primary-dark);" id="admAllowedCount">0</h3>
+                            <p style="font-size:12px; font-weight:700;">Bisa Masuk</p>
+                        </div>
+                        <div style="background:#fee2e2; padding:16px; border-radius:16px; text-align:center;">
+                            <h3 style="font-size:28px; color:#b91c1c;" id="admKickedCount">0</h3>
+                            <p style="font-size:12px; font-weight:700;">Dikeluarkan</p>
+                        </div>
+                        <div style="background:#dcfce7; padding:16px; border-radius:16px; text-align:center;">
+                            <h3 style="font-size:28px; color:#15803d;" id="admTotalMenit">0</h3>
+                            <p style="font-size:12px; font-weight:700;">Total Menit Fokus</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3 style="margin-bottom:12px;">✅ Daftar Pengguna Aktif & Hasil Refleksi Mingguan</h3>
+                    <div id="admAllowedList"></div>
+                </div>
+            </section>
+
+            <section id="adm-users" class="admin-section">
+                <div class="card">
+                    <h3 style="margin-bottom:12px;">➕ Masukkan Pengguna Baru</h3>
+                    <form onsubmit="adminAddUser(event)">
+                        <div class="card-grid-3">
+                            <div class="input-group"><input type="text" id="admAddNama" placeholder="Nama Panggilan / Kode" required></div>
+                            <div class="input-group"><input type="email" id="admAddEmail" placeholder="Email Siswa" required></div>
+                            <div class="input-group"><input type="password" id="admAddPass" placeholder="Password (min 4)" minlength="4" required></div>
+                        </div>
+                        <button type="submit" class="btn-primary" style="width:auto; padding:11px 24px;">✅ Masukkan Pengguna</button>
+                    </form>
+                </div>
+
+                <div class="card">
+                    <h3 style="margin-bottom:12px;">👥 Kontrol Akses Semua Pengguna</h3>
+                    <div id="admAllList"></div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <div class="toast" id="toastNotif">🔔 <span>Notifikasi</span></div>
+
+    <script>
+        // ============================================================
+        // KONSTANTA & LOCAL STORAGE
+        // ============================================================
+        const MAX_USERS = 100;
+        const ADMIN_NAME = 'Salsabila';
+        const ADMIN_PASS = '123456789';
+        const USERS_KEY = 'fokusbelajar_users_v2';
+        const SESSION_EMAIL_KEY = 'fb_v2_session_email';
+        const ADMIN_SESSION_KEY = 'fb_v2_admin_session';
+
+        let currentUser = null;
+        let userData = {
+            digitalReflections: [],
+            tasks: [],
+            results: [],
+            weeklyReflections: [],
+            stats: { menitFokus: 0 }
+        };
+
+        function getUsers() { return JSON.parse(localStorage.getItem(USERS_KEY) || '[]'); }
+        function saveUsers(list) { localStorage.setItem(USERS_KEY, JSON.stringify(list)); }
+        function getUserDataKey(email) { return `fokusbelajar_v2_data_${email}`; }
+        function loadStudentData(email) {
+            const raw = localStorage.getItem(getUserDataKey(email));
+            return raw ? JSON.parse(raw) : {
+                digitalReflections: [], tasks: [], results: [], weeklyReflections: [],
+                stats: { menitFokus: 0 }
+            };
+        }
+        function saveStudentData() {
+            if (!currentUser) return;
+            localStorage.setItem(getUserDataKey(currentUser.email), JSON.stringify(userData));
+            renderAllStudentUI();
+        }
+
+        // Maskot Mochi
+        const ucapanMochi = [
+            "Matikan notifikasi dulu, kamu pasti bisa! 🐼✨",
+            "Tugas berat jadi ringan kalau dimulai dari 1 langkah kecil! 🧩",
+            "Medsos bisa nunggu, progres belajarmu lebih keren! 🚀",
+            "Semangat! Mochi selalu dukung kamu hari ini! 🌟"
+        ];
+        function sapaMochi() {
+            const el = document.getElementById('mochiHero');
+            el.classList.remove('mochi-wiggle'); void el.offsetWidth; el.classList.add('mochi-wiggle');
+            document.getElementById('mochiQuote').innerText = ucapanMochi[Math.floor(Math.random() * ucapanMochi.length)];
+        }
+
+        // ============================================================
+        // AUTH PELAJAR & ADMIN
+        // ============================================================
+        function switchRole(role) {
+            document.getElementById('tabPelajar').classList.toggle('active', role === 'pelajar');
+            document.getElementById('tabAdmin').classList.toggle('active', role === 'admin');
+            if (role === 'admin') {
+                showAuthCard('admin');
+            } else {
+                const users = getUsers();
+                showAuthCard(users.length === 0 ? 'register' : 'login');
+            }
+        }
+
+        function showAuthCard(mode, msg = '', type = '') {
+            ['cardRegister', 'cardLogin', 'cardAdminLogin'].forEach(id => document.getElementById(id).classList.remove('active'));
+            ['regAlert', 'loginAlert', 'adminAlert'].forEach(id => document.getElementById(id).className = 'auth-alert');
+            const map = { register: ['cardRegister', 'regAlert'], login: ['cardLogin', 'loginAlert'], admin: ['cardAdminLogin', 'adminAlert'] };
+            const [cardId, alertId] = map[mode];
+            document.getElementById(cardId).classList.add('active');
+            if (msg) { const a = document.getElementById(alertId); a.innerText = msg; a.className = `auth-alert ${type}`; }
+        }
+
+        function doRegister(e) {
+            e.preventDefault();
+            const nama = document.getElementById('regNama').value.trim();
+            const email = document.getElementById('regEmail').value.trim().toLowerCase();
+            const pass = document.getElementById('regPass').value;
+
+            const users = getUsers();
+            if (users.some(u => u.email === email)) { showAuthCard('register', 'Email sudah terdaftar! Silakan masuk.', 'error'); return; }
+            if (users.filter(u => u.allowed !== false).length >= MAX_USERS) {
+                showAuthCard('register', `Kuota penuh! Maksimal ${MAX_USERS} pengguna aktif. Hubungi Admin Salsabila.`, 'error'); return;
+            }
+
+            users.push({ nama, email, pass, allowed: true, joinedAt: new Date().toLocaleDateString('id-ID') });
+            saveUsers(users);
+            document.getElementById('formRegister').reset();
+            document.getElementById('loginEmail').value = email;
+            showAuthCard('login', 'Akun berhasil dibuat! Silakan masuk.', 'success');
+        }
+
+        function doLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value.trim().toLowerCase();
+            const pass = document.getElementById('loginPass').value;
+
+            const u = getUsers().find(x => x.email === email);
+            if (!u) { showAuthCard('login', 'Email belum terdaftar. Silakan daftar terlebih dahulu.', 'error'); return; }
+            if (u.allowed === false) { showAuthCard('login', 'Akses ditolak! Akunmu telah dikeluarkan oleh Admin Salsabila.', 'error'); return; }
+            if (u.pass !== pass) { showAuthCard('login', 'Kata sandi salah!', 'error'); return; }
+
+            localStorage.setItem(SESSION_EMAIL_KEY, email);
+            document.getElementById('formLogin').reset();
+            startStudentApp(u);
+        }
+
+        function doAdminLogin(e) {
+            e.preventDefault();
+            const u = document.getElementById('adminUser').value.trim();
+            const p = document.getElementById('adminPass').value;
+            if (u.toLowerCase() === ADMIN_NAME.toLowerCase() && p === ADMIN_PASS) {
+                localStorage.setItem(ADMIN_SESSION_KEY, 'true');
+                document.getElementById('formAdminLogin').reset();
+                startAdminApp();
+            } else {
+                showAuthCard('admin', 'Nama Admin atau Kata Sandi salah!', 'error');
+            }
+        }
+
+        // ============================================================
+        // APLIKASI PELAJAR
+        // ============================================================
+        function startStudentApp(u) {
+            currentUser = { nama: u.nama, email: u.email };
+            userData = loadStudentData(u.email);
+            document.getElementById('topUserName').innerText = u.nama;
+            document.getElementById('heroUserName').innerText = u.nama;
+
+            document.getElementById('auth-wrapper').style.display = 'none';
+            const app = document.getElementById('main-app');
+            app.style.display = 'flex'; void app.offsetWidth; app.style.opacity = '1';
+            switchPage('beranda', document.querySelectorAll('#main-app .nav-link')[0]);
+            renderAllStudentUI();
+        }
+
+        function doLogout() {
+            localStorage.removeItem(SESSION_EMAIL_KEY);
+            currentUser = null; clearInterval(focusInterval);
+            document.getElementById('main-app').style.display = 'none';
+            const aw = document.getElementById('auth-wrapper'); aw.style.display = 'flex'; aw.style.opacity = '1';
+            switchRole('pelajar');
+            showAuthCard('login', 'Berhasil keluar dari akun.', 'success');
+        }
+
+        const pageTitles = {
+            beranda: 'Beranda & Orientasi', digital: 'Refleksi Kebiasaan Digital', rencana: 'Rencana Tugas',
+            fokus: 'Sesi Fokus Belajar', hasil: 'Catatan Hasil', mingguan: 'Refleksi Mingguan',
+            materi: 'Materi Edukasi BK', bantuan: 'Akses Bantuan BK'
+        };
+        function switchPage(id, el) {
+            document.querySelectorAll('#main-app .nav-link').forEach(n => n.classList.remove('active'));
+            if (el) el.classList.add('active');
+            document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            document.getElementById('pageHeaderTitle').innerText = pageTitles[id] || 'FokusBelajar';
+        }
+
+        // --- 2. KEBIASAAN DIGITAL + SOLUSI OTOMATIS ---
+        const solusiDigitalMap = {
+            scroll: {
+                label: 'Keterusan scroll TikTok / Reels sampai lupa waktu',
+                solusi: 'Gunakan aturan "Jeda 10 Detik" sebelum membuka aplikasi, pasang batas waktu harian (App Timer) di pengaturan HP, dan jadikan scroll sebagai hadiah 5 menit hanya setelah 1 sesi fokus selesai.'
+            },
+            notif: {
+                label: 'Mudah terdistraksi notifikasi chat / grup teman',
+                solusi: 'Aktifkan Mode Jangan Ganggu (DND) atau senyapkan notifikasi grup sementara waktu selama sesi belajar. Beri tahu teman bahwa kamu akan membalas setelah selesai belajar.'
+            },
+            referensi: {
+                label: 'Niat cari referensi tugas malah keterusan nonton medsos',
+                solusi: 'Tuliskan dulu kata kunci yang ingin dicari di kertas sebelum membuka browser. Tutup semua tab hiburan, dan begitu materi ketemu, langsung catat di buku lalu letakkan HP.'
+            },
+            fomo: {
+                label: 'Merasa FOMO jika tidak segera cek HP',
+                solusi: 'Ingatkan dirimu bahwa informasi penting tidak akan hilang dalam 25 menit. Jadwalkan jam khusus cek medsos (misalnya sore jam 17.00) agar pikiran lebih tenang saat belajar.'
+            },
+            multitask: {
+                label: 'Sering belajar sambil buka medsos bersamaan',
+                solusi: 'Terapkan aturan "Satu Layar Satu Tugas". Taruh HP di luar jangkauan tangan saat membuka buku agar otak tidak kelelahan berpindah fokus.'
+            },
+            begadang: {
+                label: 'Begadang main HP sehingga besoknya malas nugas',
+                solusi: 'Terapkan jam malam digital: letakkan charger HP agak jauh dari kasur 30 menit sebelum tidur. Tidur yang cukup akan mengembalikan energimu untuk mengerjakan tugas.'
+            }
+        };
+
+        function tampilkanSolusiDigital() {
+            const val = document.getElementById('digKeluhan').value;
+            const box = document.getElementById('boxSolusiOtomatis');
+            if (val && solusiDigitalMap[val]) {
+                document.getElementById('teksSolusiOtomatis').innerText = solusiDigitalMap[val].solusi;
+                box.classList.add('show');
+            } else {
+                box.classList.remove('show');
+            }
+        }
+
+        function simpanRefleksiDigital() {
+            const key = document.getElementById('digKeluhan').value;
+            const keluhan = key ? solusiDigitalMap[key].label : 'Dilewati / Umum';
+            const solusi = key ? solusiDigitalMap[key].solusi : 'Mulai dari langkah paling kecil dan jauhkan HP saat belajar.';
+            const situasi = document.getElementById('digSituasi').value.trim() || '-';
+            const komitmen = document.getElementById('digKomitmen').value.trim() || 'Mencoba solusi rekomendasi';
+
+            userData.digitalReflections.unshift({
+                tgl: new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short' }),
+                keluhan, solusi, situasi, komitmen
+            });
+            document.getElementById('digSituasi').value = '';
+            document.getElementById('digKomitmen').value = '';
+            saveStudentData(); showToast('✅ Refleksi & solusi digital tersimpan!');
+        }
+
+        // --- 3. WIZARD RENCANA TUGAS (IPA / IPS / UMUM + KLIK LANGSUNG KERJAKAN) ---
+        const mapelKelompok = {
+            IPA: [
+                { nama: 'Matematika', icon: '📐' }, { nama: 'Fisika', icon: '🍎' },
+                { nama: 'Kimia', icon: '🧪' }, { nama: 'Biologi', icon: '🧬' }
+            ],
+            IPS: [
+                { nama: 'Geografi', icon: '🌍' }, { nama: 'Ekonomi', icon: '📈' },
+                { nama: 'Sosiologi', icon: '🤝' }, { nama: 'Sejarah', icon: '🏛️' }
+            ],
+            Umum: [
+                { nama: 'B. Indonesia', icon: '📖' }, { nama: 'B. Inggris', icon: '🗣️' },
+                { nama: 'PAI / Agama', icon: '🕌' }, { nama: 'PKN', icon: '⚖️' },
+                { nama: 'Ketik Sendiri', icon: '✍️' }
+            ]
+        };
+        let wizData = { kelompok: '', mapel: '' };
+
+        function goWiz(step) {
+            document.querySelectorAll('.wiz-step').forEach(s => s.classList.remove('active'));
+            document.getElementById(`wiz-${step}`).classList.add('active');
+            document.getElementById('wizCustomBox').style.display = 'none';
+        }
+
+        function pilihKelompok(k) {
+            wizData.kelompok = k;
+            const grid = document.getElementById('wizMapelGrid');
+            grid.innerHTML = '';
+            mapelKelompok[k].forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'wiz-card';
+                div.innerHTML = `<span>${item.icon}</span><h4>${item.nama}</h4>`;
+                div.onclick = () => {
+                    if (item.nama === 'Ketik Sendiri') {
+                        document.getElementById('wizCustomBox').style.display = 'block';
+                        document.getElementById('wizCustomInput').focus();
+                    } else {
+                        wizData.mapel = item.nama;
+                        document.getElementById('wizSelectedMapel').innerText = `${wizData.kelompok} • ${wizData.mapel}`;
+                        goWiz(3);
+                    }
+                };
+                grid.appendChild(div);
+            });
+            goWiz(2);
+        }
+
+        function simpanCustomMapel() {
+            const v = document.getElementById('wizCustomInput').value.trim();
+            if (!v) { showToast('⚠️ Ketik nama mata pelajaran dulu.'); return; }
+            wizData.mapel = v;
+            document.getElementById('wizCustomInput').value = '';
+            document.getElementById('wizSelectedMapel').innerText = `${wizData.kelompok} • ${wizData.mapel}`;
+            goWiz(3);
+        }
+
+        function simpanRencanaTugas() {
+            const langkah = document.getElementById('tgsLangkah').value.trim();
+            const waktu = parseInt(document.getElementById('tgsWaktu').value);
+            const tenggat = document.getElementById('tgsTenggat').value || 'Fleksibel';
+            const prioritas = document.getElementById('tgsPrioritas').value;
+
+            if (!waktu || waktu < 1) { showToast('⚠️ Masukkan perkiraan durasi menit belajar.'); return; }
+
+            userData.tasks.unshift({
+                id: Date.now(),
+                kelompok: wizData.kelompok,
+                judul: wizData.mapel,
+                langkah: langkah || 'Mulai dari bagian paling mudah',
+                waktu,
+                tenggat,
+                prioritas,
+                done: false
+            });
+            document.getElementById('tgsLangkah').value = '';
+            document.getElementById('tgsWaktu').value = '';
+            document.getElementById('tgsTenggat').value = '';
+            goWiz(1);
+            saveStudentData();
+            showToast('✨ Rencana tugas disimpan! Klik tugas di daftar untuk mulai fokus.');
+        }
+
+        function toggleTaskDone(e, id) {
+            e.stopPropagation();
+            const t = userData.tasks.find(x => x.id === id);
+            if (t) { t.done = !t.done; saveStudentData(); }
+        }
+
+        function mulaiFokusDariTugas(id) {
+            const t = userData.tasks.find(x => x.id === id);
+            if (!t) return;
+            syncFocusFromNumber(t.waktu);
+            document.getElementById('fokusAktifLabel').innerText = `Mengerjakan: [${t.kelompok}] ${t.judul} • Langkah: ${t.langkah} (${t.waktu} Menit)`;
+            switchPage('fokus', document.querySelectorAll('#main-app .nav-link')[3]);
+            showToast(`⏱️ Timer diatur ${t.waktu} menit sesuai rencana ${t.judul}!`);
+        }
+
+        // --- 4. SESI FOKUS (CUSTOM RANGE) ---
+        let focusInterval = null, focusSeconds = 20 * 60, selectedFocusMins = 20, focusRunning = false;
+
+        function syncFocusFromSlider(val) {
+            document.getElementById('customFocusNum').value = val;
+            applyCustomMinutes(parseInt(val) || 1);
+        }
+        function syncFocusFromNumber(val) {
+            let num = Math.max(1, Math.min(120, parseInt(val) || 1));
+            document.getElementById('customFocusSlider').value = num;
+            document.getElementById('customFocusNum').value = num;
+            applyCustomMinutes(num);
+        }
+        function applyCustomMinutes(m) {
+            clearInterval(focusInterval); focusRunning = false;
+            selectedFocusMins = m; focusSeconds = m * 60;
+            document.getElementById('btnFocusToggle').innerText = '▶️ Mulai Fokus';
+            updateFocusDisplay();
+        }
+        function updateFocusDisplay() {
+            const m = Math.floor(focusSeconds / 60), s = focusSeconds % 60;
+            document.getElementById('focusTimerDisplay').innerText = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+        }
+        function toggleFocusTimer() {
+            const btn = document.getElementById('btnFocusToggle');
+            if (focusRunning) {
+                clearInterval(focusInterval); focusRunning = false; btn.innerText = '▶️ Lanjut';
+            } else {
+                focusRunning = true; btn.innerText = '⏸️ Jeda';
+                focusInterval = setInterval(() => {
+                    if (focusSeconds > 0) { focusSeconds--; updateFocusDisplay(); }
+                    else { clearInterval(focusInterval); focusRunning = false; showToast('🎉 Sesi fokus selesai! Keren!'); }
+                }, 1000);
+            }
+        }
+        function resetFocusTimer() { applyCustomMinutes(selectedFocusMins); }
+        function selesaiSesiFokus() {
+            clearInterval(focusInterval); focusRunning = false;
+            userData.stats.menitFokus = (userData.stats.menitFokus || 0) + selectedFocusMins;
+            saveStudentData();
+            showToast(`🎉 +${selectedFocusMins} menit fokus tercatat! Yuk isi catatan hasil.`);
+            switchPage('hasil', document.querySelectorAll('#main-app .nav-link')[4]);
+        }
+
+        // --- 5 & 6. CATATAN HASIL & REFLEKSI MINGGUAN ---
+        function simpanCatatanHasil() {
+            const status = document.getElementById('hslStatus').value;
+            const hambatan = document.getElementById('hslHambatan').value.trim() || 'Tidak ada hambatan berarti';
+            const langkah = document.getElementById('hslLangkah').value.trim() || 'Lanjut jadwal berikutnya';
+            userData.results.unshift({
+                tgl: new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short' }),
+                status, hambatan, langkah
+            });
+            document.getElementById('hslHambatan').value = '';
+            document.getElementById('hslLangkah').value = '';
+            saveStudentData(); showToast('✅ Catatan hasil tersimpan!');
+        }
+
+        function simpanRefleksiMingguan() {
+            const strategi = document.getElementById('wkStrategi').value.trim();
+            if (!strategi) { showToast('⚠️ Tuliskan strategi yang membantumu minggu ini.'); return; }
+            userData.weeklyReflections.unshift({
+                tgl: new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }),
+                strategi
+            });
+            document.getElementById('wkStrategi').value = '';
+            saveStudentData(); showToast('📊 Refleksi mingguan tersimpan & dapat dipantau Guru BK!');
+        }
+
+        function renderAllStudentUI() {
+            const doneCount = userData.tasks.filter(t => t.done).length;
+            const activeCount = userData.tasks.length - doneCount;
+            const menit = userData.stats?.menitFokus || 0;
+
+            document.getElementById('homeMenit').innerText = `${menit} Menit`;
+            document.getElementById('homeTugasDone').innerText = `${doneCount} Tugas`;
+            document.getElementById('homeTugasAktif').innerText = `${activeCount} Tugas`;
+            document.getElementById('wkMenit').innerText = menit;
+            document.getElementById('wkSelesai').innerText = doneCount;
+            document.getElementById('wkBelum').innerText = activeCount;
+
+            document.getElementById('listDigital').innerHTML = userData.digitalReflections.length
+                ? userData.digitalReflections.map(r => `
+                    <div class="list-item">
+                        <div>
+                            <strong>📅 ${r.tgl} • ${r.keluhan}</strong>
+                            <p style="font-size:12.5px; color:#0f766e; margin-top:4px; font-weight:700;">💡 Solusi: ${r.solusi}</p>
+                            <p style="font-size:12px; color:var(--text-muted); margin-top:3px;">Pemicu: ${r.situasi} • Komitmen: ${r.komitmen}</p>
+                        </div>
+                    </div>`).join('')
+                : `<p style="font-size:13px; color:var(--text-muted); text-align:center; padding:16px;">Belum ada refleksi kebiasaan digital.</p>`;
+
+            document.getElementById('listTugas').innerHTML = userData.tasks.length
+                ? userData.tasks.map(t => `
+                    <div class="list-item clickable ${t.done ? 'done' : ''}" onclick="mulaiFokusDariTugas(${t.id})">
+                        <div>
+                            <h4>${t.done ? '✅' : '📌'} [${t.kelompok}] ${t.judul} <span class="tag tag-sky">${t.waktu} mnt</span> <span class="tag ${t.prioritas === 'Tinggi' ? 'tag-red' : 'tag-green'}">${t.prioritas}</span></h4>
+                            <p style="font-size:12.5px; color:var(--text-muted); margin-top:3px;">Langkah kecil: ${t.langkah} • Tenggat: ${t.tenggat}</p>
+                            <p style="font-size:11.5px; color:var(--primary-dark); font-weight:800; margin-top:4px;">👆 Klik kartu ini untuk mulai Sesi Fokus</p>
+                        </div>
+                        <button class="btn-mini allow" onclick="toggleTaskDone(event, ${t.id})">${t.done ? '↩️ Batal' : '✅ Tandai Selesai'}</button>
+                    </div>`).join('')
+                : `<p style="font-size:13px; color:var(--text-muted); text-align:center; padding:16px;">Belum ada rencana tugas. Susun rencanamu pada langkah di atas!</p>`;
+
+            document.getElementById('listHasil').innerHTML = userData.results.length
+                ? userData.results.map(r => `<div class="list-item"><div><strong>📅 ${r.tgl} • ${r.status}</strong><p style="font-size:12.5px; color:var(--text-muted); margin-top:4px;">Hambatan: ${r.hambatan}<br>Langkah berikut: ${r.langkah}</p></div></div>`).join('')
+                : `<p style="font-size:13px; color:var(--text-muted); text-align:center; padding:16px;">Belum ada catatan hasil.</p>`;
+
+            document.getElementById('listMingguan').innerHTML = userData.weeklyReflections.length
+                ? userData.weeklyReflections.map(r => `<div class="list-item done"><div><strong>🗓️ ${r.tgl}</strong><p style="font-size:13px; margin-top:4px;">${r.strategi}</p></div></div>`).join('')
+                : `<p style="font-size:13px; color:var(--text-muted); text-align:center; padding:16px;">Belum ada refleksi mingguan.</p>`;
+        }
+
+        // ============================================================
+        // ADMIN PANEL / GURU BK (SALSABILA)
+        // ============================================================
+        function startAdminApp() {
+            document.getElementById('auth-wrapper').style.display = 'none';
+            const app = document.getElementById('admin-app');
+            app.style.display = 'flex'; void app.offsetWidth; app.style.opacity = '1';
+            switchAdminPage('adm-monitor', document.querySelectorAll('#admin-app .nav-link')[0]);
+            renderAdminUI();
+        }
+
+        function doAdminLogout() {
+            localStorage.removeItem(ADMIN_SESSION_KEY);
+            document.getElementById('admin-app').style.display = 'none';
+            const aw = document.getElementById('auth-wrapper'); aw.style.display = 'flex'; aw.style.opacity = '1';
+            switchRole('admin');
+            showAuthCard('admin', 'Berhasil keluar dari Panel Admin.', 'success');
+        }
+
+        function switchAdminPage(id, el) {
+            document.querySelectorAll('#admin-app .nav-link').forEach(n => n.classList.remove('active'));
+            if (el) el.classList.add('active');
+            document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            renderAdminUI();
+        }
+
+        function adminAddUser(e) {
+            e.preventDefault();
+            const nama = document.getElementById('admAddNama').value.trim();
+            const email = document.getElementById('admAddEmail').value.trim().toLowerCase();
+            const pass = document.getElementById('admAddPass').value;
+
+            const users = getUsers();
+            if (users.some(u => u.email === email)) { showToast('⚠️ Email sudah terdaftar!'); return; }
+            if (users.filter(u => u.allowed !== false).length >= MAX_USERS) { showToast(`🚫 Kuota penuh (${MAX_USERS} siswa)!`); return; }
+
+            users.push({ nama, email, pass, allowed: true, joinedAt: new Date().toLocaleDateString('id-ID') });
+            saveUsers(users);
+            e.target.reset();
+            renderAdminUI();
+            showToast(`✅ ${nama} berhasil dimasukkan!`);
+        }
+
+        function toggleAccess(email, allow) {
+            const users = getUsers();
+            if (allow && users.filter(u => u.allowed !== false).length >= MAX_USERS) { showToast(`🚫 Kuota sudah mencapai ${MAX_USERS}!`); return; }
+            const idx = users.findIndex(u => u.email === email);
+            if (idx !== -1) {
+                users[idx].allowed = allow;
+                saveUsers(users);
+                renderAdminUI();
+                showToast(allow ? '✅ Akses siswa diizinkan.' : '🚫 Siswa dikeluarkan.');
+            }
+        }
+
+        function deleteUser(email) {
+            if (!confirm('Hapus permanen akun siswa ini?')) return;
+            saveUsers(getUsers().filter(u => u.email !== email));
+            localStorage.removeItem(getUserDataKey(email));
+            renderAdminUI();
+            showToast('🗑️ Akun dihapus.');
+        }
+
+        function renderAdminUI() {
+            const users = getUsers().map(u => ({ ...u, allowed: u.allowed !== false, data: loadStudentData(u.email) }));
+            const allowed = users.filter(u => u.allowed);
+            const kicked = users.filter(u => !u.allowed);
+            const totalMenit = users.reduce((acc, u) => acc + (u.data.stats?.menitFokus || 0), 0);
+
+            document.getElementById('admQuotaText').innerText = `${allowed.length} / ${MAX_USERS} Pengguna Aktif`;
+            document.getElementById('admQuotaBar').style.width = `${Math.min(100, Math.round((allowed.length / MAX_USERS) * 100))}%`;
+            document.getElementById('admQuotaSub').innerText = `Sisa kuota tersedia: ${Math.max(0, MAX_USERS - allowed.length)} orang.`;
+            document.getElementById('admAllowedCount').innerText = allowed.length;
+            document.getElementById('admKickedCount').innerText = kicked.length;
+            document.getElementById('admTotalMenit').innerText = totalMenit;
+
+            // Tampilkan daftar pengguna aktif + refleksi mingguan mereka langsung untuk Guru BK
+            document.getElementById('admAllowedList').innerHTML = allowed.length
+                ? allowed.map((u, i) => {
+                    const latestRef = (u.data.weeklyReflections && u.data.weeklyReflections.length)
+                        ? `📝 Refleksi Terbaru (${u.data.weeklyReflections[0].tgl}): "${u.data.weeklyReflections[0].strategi}"`
+                        : '📝 Belum mengisi refleksi mingguan.';
+                    return `
+                    <div class="list-item">
+                        <div style="flex:1;">
+                            <h4>${i + 1}. ${u.nama} <span class="tag tag-green">✅ Bisa Masuk</span></h4>
+                            <p style="font-size:12.5px; color:var(--text-muted); margin-top:3px;">📧 ${u.email} • ⏳ ${u.data.stats?.menitFokus || 0} mnt fokus • 📝 ${(u.data.tasks || []).length} rencana</p>
+                            <p style="font-size:12.5px; color:#0f766e; font-weight:700; margin-top:5px;">${latestRef}</p>
+                        </div>
+                        <button class="btn-mini kick" onclick="toggleAccess('${u.email}', false)">🚫 Keluarkan</button>
+                    </div>`;
+                }).join('')
+                : `<p style="font-size:13px; color:var(--text-muted); text-align:center; padding:18px;">Belum ada siswa terdaftar.</p>`;
+
+            document.getElementById('admAllList').innerHTML = users.length
+                ? users.map(u => `
+                    <div class="list-item ${u.allowed ? '' : 'kicked'}">
+                        <div>
+                            <h4>${u.nama} <span class="tag ${u.allowed ? 'tag-green' : 'tag-red'}">${u.allowed ? '✅ Bisa Masuk' : '🚫 Dikeluarkan'}</span></h4>
+                            <p style="font-size:12.5px; color:var(--text-muted); margin-top:3px;">📧 ${u.email} • ⏳ ${u.data.stats?.menitFokus || 0} mnt fokus</p>
+                        </div>
+                        <div style="display:flex; gap:6px;">
+                            ${u.allowed
+                                ? `<button class="btn-mini kick" onclick="toggleAccess('${u.email}', false)">🚫 Keluarkan</button>`
+                                : `<button class="btn-mini allow" onclick="toggleAccess('${u.email}', true)">✅ Izinkan</button>`}
+                            <button class="btn-mini del" onclick="deleteUser('${u.email}')">🗑️ Hapus</button>
+                        </div>
+                    </div>`).join('')
+                : `<p style="font-size:13px; color:var(--text-muted); text-align:center; padding:18px;">Belum ada data pengguna.</p>`;
+        }
+
+        function showToast(msg) {
+            const t = document.getElementById('toastNotif');
+            t.querySelector('span').innerText = msg;
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 4000);
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            if (localStorage.getItem(ADMIN_SESSION_KEY) === 'true') { startAdminApp(); return; }
+            const savedEmail = localStorage.getItem(SESSION_EMAIL_KEY);
+            if (savedEmail) {
+                const u = getUsers().find(x => x.email === savedEmail);
+                if (u && u.allowed !== false) { startStudentApp(u); return; }
+                localStorage.removeItem(SESSION_EMAIL_KEY);
+            }
+            switchRole('pelajar');
+        });
+    </script>
+</body>
+</html>
