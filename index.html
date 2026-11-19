@@ -8,6 +8,10 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
 
+    <!-- Firebase SDK (Cloud Firestore) -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
     <style>
         /* === TEMA CERAH MODERN: OCEAN SKY, MINT & CORAL === */
         :root {
@@ -53,7 +57,7 @@
         .mochi-float { animation: floatSoft 3.2s ease-in-out infinite; }
         .mochi-wiggle { animation: wigglePanda 0.5s ease !important; }
 
-        /* === HALAMAN LOGIN SPLIT-SCREEN (BERBEDA DARI PROJEK SEBELUMNYA) === */
+        /* === HALAMAN LOGIN SPLIT-SCREEN === */
         #auth-wrapper {
             display: flex; align-items: center; justify-content: center;
             position: fixed; inset: 0; z-index: 1000; padding: 20px;
@@ -133,6 +137,7 @@
             transition: 0.2s; margin-top: 6px;
         }
         .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(14,165,233,0.25); }
+        .btn-primary:disabled { opacity: 0.65; cursor: not-allowed; transform: none; }
         .btn-coral { background: linear-gradient(135deg, #ff8c66, var(--coral)); border-bottom-color: #d9532f; }
         .btn-dark { background: linear-gradient(135deg, #334155, #1e293b); border-bottom-color: #0f172a; }
         .btn-soft {
@@ -331,7 +336,7 @@
 </head>
 <body>
 
-    <!-- === HALAMAN LOGIN SPLIT-SCREEN (BERBEDA & MASKOT FULL-BODY) === -->
+    <!-- === HALAMAN LOGIN SPLIT-SCREEN (MASKOT FULL-BODY MOCHI PANDA) === -->
     <div id="auth-wrapper">
         <div class="auth-split-box">
             <!-- Panel Kiri: Maskot Full-Body Mochi si Panda -->
@@ -406,7 +411,7 @@
                             <label>Kata Sandi</label>
                             <input type="password" id="regPass" placeholder="Minimal 4 karakter" minlength="4" required>
                         </div>
-                        <button type="submit" class="btn-primary">✨ Daftar Sekarang</button>
+                        <button type="submit" id="btnRegSubmit" class="btn-primary">✨ Daftar Sekarang</button>
                     </form>
                     <div class="auth-switch">Sudah punya akun? <a onclick="showAuthCard('login')">Masuk di sini</a></div>
                 </div>
@@ -425,7 +430,7 @@
                             <label>Kata Sandi</label>
                             <input type="password" id="loginPass" placeholder="••••••••" required>
                         </div>
-                        <button type="submit" class="btn-primary">🚀 Masuk ke FokusBelajar</button>
+                        <button type="submit" id="btnLoginSubmit" class="btn-primary">🚀 Masuk ke FokusBelajar</button>
                     </form>
                     <div class="auth-switch">Belum punya akun? <a onclick="showAuthCard('register')">Daftar terlebih dahulu</a></div>
                 </div>
@@ -489,7 +494,7 @@
                     <div class="user-avatar">🐼</div>
                     <div>
                         <div style="font-size:13px; font-weight:800;" id="topUserName">Siswa</div>
-                        <div style="font-size:11px; color:var(--teal); font-weight:700;">Teman Mochi</div>
+                        <div style="font-size:11px; color:var(--teal); font-weight:700;">☁️ Cloud Sync Aktif</div>
                     </div>
                 </div>
             </div>
@@ -595,7 +600,7 @@
                 </div>
             </section>
 
-            <!-- 2. REFLEKSI KEBIASAAN DIGITAL (DIPERBANYAK + SOLUSI OTOMATIS) -->
+            <!-- 2. REFLEKSI KEBIASAAN DIGITAL (6 KELUHAN + SOLUSI OTOMATIS) -->
             <section id="digital" class="page-section">
                 <div class="card">
                     <span class="limit-badge">ℹ️ Batas Penggunaan: Bukan diagnosis psikologis; jawaban boleh dilewati.</span>
@@ -897,7 +902,7 @@
                 <a class="nav-link" onclick="switchAdminPage('adm-users', this)"><span>👥</span> Kelola Akses</a>
             </div>
             <div class="side-note" style="background:var(--primary-light); border-color:var(--primary); color:var(--primary-dark);">
-                🛡️ Admin: <strong>Salsabila</strong><br>Kuota: Maks. 100 Siswa
+                🛡️ Admin: <strong>Salsabila</strong><br>☁️ Cloud Sync Aktif (Maks. 100)
             </div>
             <div class="logout-desktop" style="padding:4px;">
                 <a class="nav-link" style="color:var(--danger);" onclick="doAdminLogout()"><span>🚪</span> Keluar Admin</a>
@@ -908,9 +913,9 @@
             <section id="adm-monitor" class="admin-section active">
                 <div class="hero-banner admin-hero">
                     <div>
-                        <div class="hero-pill">🛡️ MONITORING BK & KONTROL KUOTA</div>
+                        <div class="hero-pill">☁️ REAL-TIME CLOUD MONITORING BK</div>
                         <h1 style="font-size:28px; margin-bottom:6px;">Halo, Admin Salsabila!</h1>
-                        <p style="font-size:13.5px; opacity:0.9;">Pantau kuota 100 pengguna, lihat siapa saja yang bisa masuk, dan baca hasil refleksi mingguan siswa secara langsung.</p>
+                        <p style="font-size:13.5px; opacity:0.9;">Pantau kuota 100 pengguna lintas perangkat, lihat siapa saja yang bisa masuk, dan baca hasil refleksi mingguan siswa secara langsung.</p>
                     </div>
                     <div style="font-size:56px;" class="mochi-float">🛡️</div>
                 </div>
@@ -918,10 +923,10 @@
                 <div class="card">
                     <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
                         <h3>👥 Kuota Pengguna FokusBelajar</h3>
-                        <strong style="color:var(--primary-dark);" id="admQuotaText">0 / 100 Aktif</strong>
+                        <strong style="color:var(--primary-dark);" id="admQuotaText">Memuat...</strong>
                     </div>
                     <div class="bar-bg"><div class="bar-fill" id="admQuotaBar"></div></div>
-                    <p style="font-size:12.5px; color:var(--text-muted); font-weight:600;" id="admQuotaSub">Sisa kuota tersedia: 100 orang.</p>
+                    <p style="font-size:12.5px; color:var(--text-muted); font-weight:600;" id="admQuotaSub">Menyinkronkan data dari Firebase...</p>
                     <div class="card-grid-3" style="margin-top:16px;">
                         <div style="background:var(--primary-light); padding:16px; border-radius:16px; text-align:center;">
                             <h3 style="font-size:28px; color:var(--primary-dark);" id="admAllowedCount">0</h3>
@@ -940,7 +945,7 @@
 
                 <div class="card">
                     <h3 style="margin-bottom:12px;">✅ Daftar Pengguna Aktif & Hasil Refleksi Mingguan</h3>
-                    <div id="admAllowedList"></div>
+                    <div id="admAllowedList"><p style="font-size:13px; color:var(--text-muted); text-align:center; padding:18px;">⏳ Mengambil data dari Firebase...</p></div>
                 </div>
             </section>
 
@@ -953,13 +958,13 @@
                             <div class="input-group"><input type="email" id="admAddEmail" placeholder="Email Siswa" required></div>
                             <div class="input-group"><input type="password" id="admAddPass" placeholder="Password (min 4)" minlength="4" required></div>
                         </div>
-                        <button type="submit" class="btn-primary" style="width:auto; padding:11px 24px;">✅ Masukkan Pengguna</button>
+                        <button type="submit" id="btnAdminAdd" class="btn-primary" style="width:auto; padding:11px 24px;">✅ Masukkan Pengguna</button>
                     </form>
                 </div>
 
                 <div class="card">
                     <h3 style="margin-bottom:12px;">👥 Kontrol Akses Semua Pengguna</h3>
-                    <div id="admAllList"></div>
+                    <div id="admAllList"><p style="font-size:13px; color:var(--text-muted); text-align:center; padding:18px;">⏳ Mengambil data dari Firebase...</p></div>
                 </div>
             </section>
         </div>
@@ -969,16 +974,34 @@
 
     <script>
         // ============================================================
-        // KONSTANTA & LOCAL STORAGE
+        // 1. KONFIGURASI FIREBASE (FOKUSBELAJAR-WEB)
+        // ============================================================
+        const firebaseConfig = {
+            apiKey: "AIzaSyBCajGrISFE1THDSaSy3dzsdbSI6LWX0Xc",
+            authDomain: "fokusbelajar-web.firebaseapp.com",
+            projectId: "fokusbelajar-web",
+            storageBucket: "fokusbelajar-web.firebasestorage.app",
+            messagingSenderId: "953255758336",
+            appId: "1:953255758336:web:761b48b69b3d72ad5fe6e5"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const usersCol = db.collection('fokusbelajar_users');
+
+        // ============================================================
+        // 2. KONSTANTA & STATE
         // ============================================================
         const MAX_USERS = 100;
         const ADMIN_NAME = 'Salsabila';
         const ADMIN_PASS = '123456789';
-        const USERS_KEY = 'fokusbelajar_users_v2';
-        const SESSION_EMAIL_KEY = 'fb_v2_session_email';
-        const ADMIN_SESSION_KEY = 'fb_v2_admin_session';
+        const SESSION_EMAIL_KEY = 'fb_cloud_session_email';
+        const ADMIN_SESSION_KEY = 'fb_cloud_admin_session';
 
         let currentUser = null;
+        let cachedAdminUsers = [];
+        let unsubAdmin = null;
+        let unsubStudent = null;
         let userData = {
             digitalReflections: [],
             tasks: [],
@@ -986,22 +1009,6 @@
             weeklyReflections: [],
             stats: { menitFokus: 0 }
         };
-
-        function getUsers() { return JSON.parse(localStorage.getItem(USERS_KEY) || '[]'); }
-        function saveUsers(list) { localStorage.setItem(USERS_KEY, JSON.stringify(list)); }
-        function getUserDataKey(email) { return `fokusbelajar_v2_data_${email}`; }
-        function loadStudentData(email) {
-            const raw = localStorage.getItem(getUserDataKey(email));
-            return raw ? JSON.parse(raw) : {
-                digitalReflections: [], tasks: [], results: [], weeklyReflections: [],
-                stats: { menitFokus: 0 }
-            };
-        }
-        function saveStudentData() {
-            if (!currentUser) return;
-            localStorage.setItem(getUserDataKey(currentUser.email), JSON.stringify(userData));
-            renderAllStudentUI();
-        }
 
         // Maskot Mochi
         const ucapanMochi = [
@@ -1017,17 +1024,12 @@
         }
 
         // ============================================================
-        // AUTH PELAJAR & ADMIN
+        // 3. AUTH PELAJAR & ADMIN (FIREBASE CLOUD)
         // ============================================================
         function switchRole(role) {
             document.getElementById('tabPelajar').classList.toggle('active', role === 'pelajar');
             document.getElementById('tabAdmin').classList.toggle('active', role === 'admin');
-            if (role === 'admin') {
-                showAuthCard('admin');
-            } else {
-                const users = getUsers();
-                showAuthCard(users.length === 0 ? 'register' : 'login');
-            }
+            showAuthCard(role === 'admin' ? 'admin' : 'login');
         }
 
         function showAuthCard(mode, msg = '', type = '') {
@@ -1039,38 +1041,64 @@
             if (msg) { const a = document.getElementById(alertId); a.innerText = msg; a.className = `auth-alert ${type}`; }
         }
 
-        function doRegister(e) {
+        async function doRegister(e) {
             e.preventDefault();
+            const btn = document.getElementById('btnRegSubmit');
             const nama = document.getElementById('regNama').value.trim();
             const email = document.getElementById('regEmail').value.trim().toLowerCase();
             const pass = document.getElementById('regPass').value;
 
-            const users = getUsers();
-            if (users.some(u => u.email === email)) { showAuthCard('register', 'Email sudah terdaftar! Silakan masuk.', 'error'); return; }
-            if (users.filter(u => u.allowed !== false).length >= MAX_USERS) {
-                showAuthCard('register', `Kuota penuh! Maksimal ${MAX_USERS} pengguna aktif. Hubungi Admin Salsabila.`, 'error'); return;
-            }
+            btn.disabled = true; btn.innerText = '⏳ Mendaftarkan...';
+            try {
+                const existing = await usersCol.doc(email).get();
+                if (existing.exists) {
+                    showAuthCard('register', 'Email sudah terdaftar! Silakan langsung masuk.', 'error'); return;
+                }
+                const activeSnap = await usersCol.where('allowed', '==', true).get();
+                if (activeSnap.size >= MAX_USERS) {
+                    showAuthCard('register', `Kuota website penuh! Maksimal ${MAX_USERS} pengguna aktif. Hubungi Admin Salsabila.`, 'error'); return;
+                }
 
-            users.push({ nama, email, pass, allowed: true, joinedAt: new Date().toLocaleDateString('id-ID') });
-            saveUsers(users);
-            document.getElementById('formRegister').reset();
-            document.getElementById('loginEmail').value = email;
-            showAuthCard('login', 'Akun berhasil dibuat! Silakan masuk.', 'success');
+                await usersCol.doc(email).set({
+                    nama, email, pass, allowed: true, joinedAt: new Date().toLocaleDateString('id-ID'),
+                    digitalReflections: [], tasks: [], results: [], weeklyReflections: [],
+                    stats: { menitFokus: 0 }
+                });
+
+                document.getElementById('formRegister').reset();
+                document.getElementById('loginEmail').value = email;
+                showAuthCard('login', 'Akun berhasil dibuat di cloud! Silakan masuk.', 'success');
+            } catch (err) {
+                console.error(err);
+                showAuthCard('register', 'Gagal terhubung ke database Firebase. Periksa koneksi internetmu.', 'error');
+            } finally {
+                btn.disabled = false; btn.innerText = '✨ Daftar Sekarang';
+            }
         }
 
-        function doLogin(e) {
+        async function doLogin(e) {
             e.preventDefault();
+            const btn = document.getElementById('btnLoginSubmit');
             const email = document.getElementById('loginEmail').value.trim().toLowerCase();
             const pass = document.getElementById('loginPass').value;
 
-            const u = getUsers().find(x => x.email === email);
-            if (!u) { showAuthCard('login', 'Email belum terdaftar. Silakan daftar terlebih dahulu.', 'error'); return; }
-            if (u.allowed === false) { showAuthCard('login', 'Akses ditolak! Akunmu telah dikeluarkan oleh Admin Salsabila.', 'error'); return; }
-            if (u.pass !== pass) { showAuthCard('login', 'Kata sandi salah!', 'error'); return; }
+            btn.disabled = true; btn.innerText = '⏳ Memeriksa akun...';
+            try {
+                const snap = await usersCol.doc(email).get();
+                if (!snap.exists) { showAuthCard('login', 'Email belum terdaftar. Silakan daftar terlebih dahulu.', 'error'); return; }
+                const u = snap.data();
+                if (u.allowed === false) { showAuthCard('login', 'Akses ditolak! Akunmu telah dikeluarkan oleh Admin Salsabila.', 'error'); return; }
+                if (u.pass !== pass) { showAuthCard('login', 'Kata sandi salah!', 'error'); return; }
 
-            localStorage.setItem(SESSION_EMAIL_KEY, email);
-            document.getElementById('formLogin').reset();
-            startStudentApp(u);
+                localStorage.setItem(SESSION_EMAIL_KEY, email);
+                document.getElementById('formLogin').reset();
+                startStudentApp(u);
+            } catch (err) {
+                console.error(err);
+                showAuthCard('login', 'Gagal terhubung ke database Firebase. Periksa koneksi internetmu.', 'error');
+            } finally {
+                btn.disabled = false; btn.innerText = '🚀 Masuk ke FokusBelajar';
+            }
         }
 
         function doAdminLogin(e) {
@@ -1087,11 +1115,11 @@
         }
 
         // ============================================================
-        // APLIKASI PELAJAR
+        // 4. APLIKASI PELAJAR (REAL-TIME CLOUD SYNC)
         // ============================================================
         function startStudentApp(u) {
             currentUser = { nama: u.nama, email: u.email };
-            userData = loadStudentData(u.email);
+            applyStudentData(u);
             document.getElementById('topUserName').innerText = u.nama;
             document.getElementById('heroUserName').innerText = u.nama;
 
@@ -1099,10 +1127,56 @@
             const app = document.getElementById('main-app');
             app.style.display = 'flex'; void app.offsetWidth; app.style.opacity = '1';
             switchPage('beranda', document.querySelectorAll('#main-app .nav-link')[0]);
+
+            if (unsubStudent) unsubStudent();
+            unsubStudent = usersCol.doc(u.email).onSnapshot(doc => {
+                if (!doc.exists || doc.data().allowed === false) {
+                    forceLogoutByAdmin();
+                    return;
+                }
+                applyStudentData(doc.data());
+            });
+        }
+
+        function applyStudentData(d) {
+            userData = {
+                digitalReflections: Array.isArray(d.digitalReflections) ? d.digitalReflections : [],
+                tasks: Array.isArray(d.tasks) ? d.tasks : [],
+                results: Array.isArray(d.results) ? d.results : [],
+                weeklyReflections: Array.isArray(d.weeklyReflections) ? d.weeklyReflections : [],
+                stats: d.stats || { menitFokus: 0 }
+            };
             renderAllStudentUI();
         }
 
+        async function saveStudentData() {
+            if (!currentUser) return;
+            try {
+                await usersCol.doc(currentUser.email).update({
+                    digitalReflections: userData.digitalReflections,
+                    tasks: userData.tasks,
+                    results: userData.results,
+                    weeklyReflections: userData.weeklyReflections,
+                    stats: userData.stats
+                });
+            } catch (err) {
+                console.error(err);
+                showToast('⚠️ Gagal menyinkronkan ke cloud. Periksa internetmu.');
+            }
+        }
+
+        function forceLogoutByAdmin() {
+            if (unsubStudent) { unsubStudent(); unsubStudent = null; }
+            localStorage.removeItem(SESSION_EMAIL_KEY);
+            currentUser = null; clearInterval(focusInterval);
+            document.getElementById('main-app').style.display = 'none';
+            const aw = document.getElementById('auth-wrapper'); aw.style.display = 'flex'; aw.style.opacity = '1';
+            switchRole('pelajar');
+            showAuthCard('login', 'Sesi dihentikan! Akunmu telah dikeluarkan oleh Admin Salsabila.', 'error');
+        }
+
         function doLogout() {
+            if (unsubStudent) { unsubStudent(); unsubStudent = null; }
             localStorage.removeItem(SESSION_EMAIL_KEY);
             currentUser = null; clearInterval(focusInterval);
             document.getElementById('main-app').style.display = 'none';
@@ -1124,7 +1198,7 @@
             document.getElementById('pageHeaderTitle').innerText = pageTitles[id] || 'FokusBelajar';
         }
 
-        // --- 2. KEBIASAAN DIGITAL + SOLUSI OTOMATIS ---
+        // --- KEBIASAAN DIGITAL + SOLUSI OTOMATIS ---
         const solusiDigitalMap = {
             scroll: {
                 label: 'Keterusan scroll TikTok / Reels sampai lupa waktu',
@@ -1179,7 +1253,7 @@
             saveStudentData(); showToast('✅ Refleksi & solusi digital tersimpan!');
         }
 
-        // --- 3. WIZARD RENCANA TUGAS (IPA / IPS / UMUM + KLIK LANGSUNG KERJAKAN) ---
+        // --- WIZARD RENCANA TUGAS (IPA / IPS / UMUM + KLIK LANGSUNG KERJAKAN) ---
         const mapelKelompok = {
             IPA: [
                 { nama: 'Matematika', icon: '📐' }, { nama: 'Fisika', icon: '🍎' },
@@ -1276,7 +1350,7 @@
             showToast(`⏱️ Timer diatur ${t.waktu} menit sesuai rencana ${t.judul}!`);
         }
 
-        // --- 4. SESI FOKUS (CUSTOM RANGE) ---
+        // --- SESI FOKUS (CUSTOM RANGE) ---
         let focusInterval = null, focusSeconds = 20 * 60, selectedFocusMins = 20, focusRunning = false;
 
         function syncFocusFromSlider(val) {
@@ -1320,7 +1394,7 @@
             switchPage('hasil', document.querySelectorAll('#main-app .nav-link')[4]);
         }
 
-        // --- 5 & 6. CATATAN HASIL & REFLEKSI MINGGUAN ---
+        // --- CATATAN HASIL & REFLEKSI MINGGUAN ---
         function simpanCatatanHasil() {
             const status = document.getElementById('hslStatus').value;
             const hambatan = document.getElementById('hslHambatan').value.trim() || 'Tidak ada hambatan berarti';
@@ -1342,7 +1416,7 @@
                 strategi
             });
             document.getElementById('wkStrategi').value = '';
-            saveStudentData(); showToast('📊 Refleksi mingguan tersimpan & dapat dipantau Guru BK!');
+            saveStudentData(); showToast('📊 Refleksi mingguan tersimpan & langsung terpantau Guru BK!');
         }
 
         function renderAllStudentUI() {
@@ -1390,17 +1464,36 @@
         }
 
         // ============================================================
-        // ADMIN PANEL / GURU BK (SALSABILA)
+        // 5. ADMIN PANEL / GURU BK (SALSABILA - REAL-TIME CLOUD)
         // ============================================================
         function startAdminApp() {
             document.getElementById('auth-wrapper').style.display = 'none';
             const app = document.getElementById('admin-app');
             app.style.display = 'flex'; void app.offsetWidth; app.style.opacity = '1';
             switchAdminPage('adm-monitor', document.querySelectorAll('#admin-app .nav-link')[0]);
-            renderAdminUI();
+
+            if (unsubAdmin) unsubAdmin();
+            unsubAdmin = usersCol.onSnapshot(snap => {
+                cachedAdminUsers = snap.docs.map(doc => {
+                    const d = doc.data();
+                    return {
+                        email: doc.id,
+                        nama: d.nama || 'Siswa',
+                        allowed: d.allowed !== false,
+                        tasks: Array.isArray(d.tasks) ? d.tasks : [],
+                        weeklyReflections: Array.isArray(d.weeklyReflections) ? d.weeklyReflections : [],
+                        stats: d.stats || { menitFokus: 0 }
+                    };
+                });
+                renderAdminUI();
+            }, err => {
+                console.error(err);
+                showToast('⚠️ Gagal menyinkronkan data admin dari Firebase.');
+            });
         }
 
         function doAdminLogout() {
+            if (unsubAdmin) { unsubAdmin(); unsubAdmin = null; }
             localStorage.removeItem(ADMIN_SESSION_KEY);
             document.getElementById('admin-app').style.display = 'none';
             const aw = document.getElementById('auth-wrapper'); aw.style.display = 'flex'; aw.style.opacity = '1';
@@ -1416,48 +1509,61 @@
             renderAdminUI();
         }
 
-        function adminAddUser(e) {
+        async function adminAddUser(e) {
             e.preventDefault();
+            const btn = document.getElementById('btnAdminAdd');
             const nama = document.getElementById('admAddNama').value.trim();
             const email = document.getElementById('admAddEmail').value.trim().toLowerCase();
             const pass = document.getElementById('admAddPass').value;
 
-            const users = getUsers();
-            if (users.some(u => u.email === email)) { showToast('⚠️ Email sudah terdaftar!'); return; }
-            if (users.filter(u => u.allowed !== false).length >= MAX_USERS) { showToast(`🚫 Kuota penuh (${MAX_USERS} siswa)!`); return; }
+            btn.disabled = true; btn.innerText = '⏳ Menyimpan...';
+            try {
+                const existing = await usersCol.doc(email).get();
+                if (existing.exists) { showToast('⚠️ Email sudah terdaftar!'); return; }
+                if (cachedAdminUsers.filter(u => u.allowed).length >= MAX_USERS) { showToast(`🚫 Kuota penuh (${MAX_USERS} siswa)!`); return; }
 
-            users.push({ nama, email, pass, allowed: true, joinedAt: new Date().toLocaleDateString('id-ID') });
-            saveUsers(users);
-            e.target.reset();
-            renderAdminUI();
-            showToast(`✅ ${nama} berhasil dimasukkan!`);
-        }
-
-        function toggleAccess(email, allow) {
-            const users = getUsers();
-            if (allow && users.filter(u => u.allowed !== false).length >= MAX_USERS) { showToast(`🚫 Kuota sudah mencapai ${MAX_USERS}!`); return; }
-            const idx = users.findIndex(u => u.email === email);
-            if (idx !== -1) {
-                users[idx].allowed = allow;
-                saveUsers(users);
-                renderAdminUI();
-                showToast(allow ? '✅ Akses siswa diizinkan.' : '🚫 Siswa dikeluarkan.');
+                await usersCol.doc(email).set({
+                    nama, email, pass, allowed: true, joinedAt: new Date().toLocaleDateString('id-ID'),
+                    digitalReflections: [], tasks: [], results: [], weeklyReflections: [],
+                    stats: { menitFokus: 0 }
+                });
+                e.target.reset();
+                showToast(`✅ ${nama} berhasil dimasukkan ke website!`);
+            } catch (err) {
+                console.error(err);
+                showToast('❌ Gagal menambahkan pengguna ke database.');
+            } finally {
+                btn.disabled = false; btn.innerText = '✅ Masukkan Pengguna';
             }
         }
 
-        function deleteUser(email) {
-            if (!confirm('Hapus permanen akun siswa ini?')) return;
-            saveUsers(getUsers().filter(u => u.email !== email));
-            localStorage.removeItem(getUserDataKey(email));
-            renderAdminUI();
-            showToast('🗑️ Akun dihapus.');
+        async function toggleAccess(email, allow) {
+            if (allow && cachedAdminUsers.filter(u => u.allowed).length >= MAX_USERS) {
+                showToast(`🚫 Kuota sudah mencapai ${MAX_USERS}!`); return;
+            }
+            try {
+                await usersCol.doc(email).update({ allowed: allow });
+                showToast(allow ? '✅ Akses siswa diizinkan.' : '🚫 Siswa dikeluarkan dari website.');
+            } catch (err) {
+                showToast('❌ Gagal mengubah status akses.');
+            }
+        }
+
+        async function deleteUser(email) {
+            if (!confirm('Hapus permanen akun dan seluruh data siswa ini dari database?')) return;
+            try {
+                await usersCol.doc(email).delete();
+                showToast('🗑️ Akun siswa berhasil dihapus.');
+            } catch (err) {
+                showToast('❌ Gagal menghapus akun.');
+            }
         }
 
         function renderAdminUI() {
-            const users = getUsers().map(u => ({ ...u, allowed: u.allowed !== false, data: loadStudentData(u.email) }));
+            const users = cachedAdminUsers;
             const allowed = users.filter(u => u.allowed);
             const kicked = users.filter(u => !u.allowed);
-            const totalMenit = users.reduce((acc, u) => acc + (u.data.stats?.menitFokus || 0), 0);
+            const totalMenit = users.reduce((acc, u) => acc + (u.stats?.menitFokus || 0), 0);
 
             document.getElementById('admQuotaText').innerText = `${allowed.length} / ${MAX_USERS} Pengguna Aktif`;
             document.getElementById('admQuotaBar').style.width = `${Math.min(100, Math.round((allowed.length / MAX_USERS) * 100))}%`;
@@ -1466,17 +1572,16 @@
             document.getElementById('admKickedCount').innerText = kicked.length;
             document.getElementById('admTotalMenit').innerText = totalMenit;
 
-            // Tampilkan daftar pengguna aktif + refleksi mingguan mereka langsung untuk Guru BK
             document.getElementById('admAllowedList').innerHTML = allowed.length
                 ? allowed.map((u, i) => {
-                    const latestRef = (u.data.weeklyReflections && u.data.weeklyReflections.length)
-                        ? `📝 Refleksi Terbaru (${u.data.weeklyReflections[0].tgl}): "${u.data.weeklyReflections[0].strategi}"`
+                    const latestRef = (u.weeklyReflections && u.weeklyReflections.length)
+                        ? `📝 Refleksi Mingguan (${u.weeklyReflections[0].tgl}): "${u.weeklyReflections[0].strategi}"`
                         : '📝 Belum mengisi refleksi mingguan.';
                     return `
                     <div class="list-item">
                         <div style="flex:1;">
                             <h4>${i + 1}. ${u.nama} <span class="tag tag-green">✅ Bisa Masuk</span></h4>
-                            <p style="font-size:12.5px; color:var(--text-muted); margin-top:3px;">📧 ${u.email} • ⏳ ${u.data.stats?.menitFokus || 0} mnt fokus • 📝 ${(u.data.tasks || []).length} rencana</p>
+                            <p style="font-size:12.5px; color:var(--text-muted); margin-top:3px;">📧 ${u.email} • ⏳ ${u.stats?.menitFokus || 0} mnt fokus • 📝 ${u.tasks.length} rencana</p>
                             <p style="font-size:12.5px; color:#0f766e; font-weight:700; margin-top:5px;">${latestRef}</p>
                         </div>
                         <button class="btn-mini kick" onclick="toggleAccess('${u.email}', false)">🚫 Keluarkan</button>
@@ -1489,7 +1594,7 @@
                     <div class="list-item ${u.allowed ? '' : 'kicked'}">
                         <div>
                             <h4>${u.nama} <span class="tag ${u.allowed ? 'tag-green' : 'tag-red'}">${u.allowed ? '✅ Bisa Masuk' : '🚫 Dikeluarkan'}</span></h4>
-                            <p style="font-size:12.5px; color:var(--text-muted); margin-top:3px;">📧 ${u.email} • ⏳ ${u.data.stats?.menitFokus || 0} mnt fokus</p>
+                            <p style="font-size:12.5px; color:var(--text-muted); margin-top:3px;">📧 ${u.email} • ⏳ ${u.stats?.menitFokus || 0} mnt fokus</p>
                         </div>
                         <div style="display:flex; gap:6px;">
                             ${u.allowed
@@ -1508,12 +1613,15 @@
             setTimeout(() => t.classList.remove('show'), 4000);
         }
 
-        window.addEventListener('DOMContentLoaded', () => {
+        // Auto-restore sesi dari Cloud
+        window.addEventListener('DOMContentLoaded', async () => {
             if (localStorage.getItem(ADMIN_SESSION_KEY) === 'true') { startAdminApp(); return; }
             const savedEmail = localStorage.getItem(SESSION_EMAIL_KEY);
             if (savedEmail) {
-                const u = getUsers().find(x => x.email === savedEmail);
-                if (u && u.allowed !== false) { startStudentApp(u); return; }
+                try {
+                    const snap = await usersCol.doc(savedEmail).get();
+                    if (snap.exists && snap.data().allowed !== false) { startStudentApp(snap.data()); return; }
+                } catch (e) {}
                 localStorage.removeItem(SESSION_EMAIL_KEY);
             }
             switchRole('pelajar');
